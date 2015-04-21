@@ -10,6 +10,6 @@ define('STAFF_GROUP_ID', 2);
 
 define('CLIENT_GROUP_ID', 3);
 
-define('NINE_HOURS', 60*60*9);
+define('NINE_HOURS', 60 * 60 * 9);
 
 
