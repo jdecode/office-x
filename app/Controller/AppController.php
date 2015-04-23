@@ -198,6 +198,19 @@ class AppController extends Controller {
 
 	function _deny_url() {
 		$action = $this->params->params['action'];
+		
+		/*
+		dpr($this->_deny['admin']);
+		dpr($this->_deny['staff']);
+		dpr($this->_deny['client']);
+		decho('Admin:');
+		dvd($this->_admin_auth_check());
+		decho('Staff:');
+		dvd($this->_staff_auth_check());
+		decho('Client:');
+		dvd($this->_client_auth_check());
+		*/
+		//die;
 		// If method requires login then redirect to login page[if logged out] with referer URL, and to dashboard otherwise
 		if (!empty($this->_deny['admin'])) {
 			if (in_array($action, $this->_deny['admin'])) {
@@ -220,7 +233,7 @@ class AppController extends Controller {
 		if (!empty($this->_deny['client'])) {
 			if (in_array($action, $this->_deny['client'])) {
 				if (!$this->_client_auth_check()) {
-					//$this->Session->write('redirect', "/".$this->params->url);
+					$this->Session->write('redirect', "/".$this->params->url);
 					$this->redirect('/login');
 				}
 			}

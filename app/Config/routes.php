@@ -31,12 +31,15 @@ Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 
 Router::connect('/admin', array('controller' => 'users', 'action' => 'dashboard', 'admin' => true));
+Router::connect('/admin/logout', array('controller' => 'users', 'action' => 'logout', 'admin' => true));
 Router::connect('/admin/dashboard', array('controller' => 'users', 'action' => 'dashboard', 'admin' => true));
 
-Router::connect('/staff', array('controller' => 'users', 'action' => 'dashboard'));
-Router::connect('/staff/dashboard', array('controller' => 'users', 'action' => 'dashboard'));
+Router::connect('/staff', array('controller' => 'users', 'action' => 'dashboard', 'staff' => true));
+Router::connect('/staff/logout', array('controller' => 'users', 'action' => 'logout', 'staff' => true));
+Router::connect('/staff/dashboard', array('controller' => 'users', 'action' => 'dashboard', 'staff' => true));
 
 Router::connect('/client', array('controller' => 'users', 'action' => 'dashboard', 'client' => true));
+Router::connect('/client/logout', array('controller' => 'users', 'action' => 'logout', 'client' => true));
 Router::connect('/client/dashboard', array('controller' => 'users', 'action' => 'dashboard', 'client' => true));
 
 /**

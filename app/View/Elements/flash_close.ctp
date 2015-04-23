@@ -6,7 +6,7 @@
 <script type="text/javascript">
 	if($('#flash_close').length == 1) {
 		$('#flash_close').
-			animate({'margin-top' : '-200px'}).
+			//animate({'margin-top' : '-200px'}).
 				removeClass('hide').
 					animate({'margin-top' : '0px'}).
 						delay(10000).

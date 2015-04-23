@@ -2254,4 +2254,5 @@ label {
 aside {
     float: left;
     width: 20%;
+    margin-top: 2px;
 }
