@@ -21,31 +21,27 @@ class UsersController extends AppController {
 		$this->_deny = array(
 			'admin' => array(
 				'admin_dashboard',
-				'logout',
+				'admin_logout',
 				'admin_index',
 				'admin_view',
 				'admin_add',
 				'admin_delete',
 				'admin_userlist',
 				'admin_changepassword',
-				'admin_reset_password',
-				'admin_login_status',
 				'admin_clogin',
 				'admin_slogin',
 			),
 			'staff' => array(
 				'staff_dashboard',
 				'staff_changepassword',
-				'logout',
+				'staff_logout',
 			),
 			'client' => array(
 				'client_dashboard',
 				'client_changepassword',
-				'logout',
+				'client_logout',
 			),
 		);
-		//pr($this->request->data); die;
-		//pr($this->params); die;
 		$this->_deny_url($this->_deny);
 	}
 
@@ -206,16 +202,14 @@ class UsersController extends AppController {
 	}
 
 	public function staff_dashboard() {
-		$this->layout = 'dashboard';
 		$this->recursive = '0';
-		$this->redirect('/staff/uploads/inbox');
+		//$this->redirect('/staff/uploads/inbox');
 		//$this->set('file', $this->Upload->find('all', array('conditions' => array('Upload.user_id' => $this->Auth->user('id')))));
 	}
 
 	public function client_dashboard() {
-		$this->layout = 'client_dashboard';
 		$this->recursive = '0';
-		$this->redirect('/client/uploads/inbox');
+		//$this->redirect('/client/uploads/inbox');
 		//$this->set('file', $this->Upload->find('all', array('conditions' => array('Upload.user_id' => $this->Auth->user('id')))));
 	}
 
@@ -226,7 +220,7 @@ class UsersController extends AppController {
 
 	function login() {
 		$this->set('title_for_layout', 'Login');
-		//die('user_login');
+		//die('login');
 		if ($this->_staff_auth_check()) {
 			$this->redirect('/staff/dashboard');
 		}
@@ -248,21 +242,21 @@ class UsersController extends AppController {
 			);
 			if ($user) {
 				if ($user['User']['password'] == sha1($this->request->data['User']['password'])) {
-					switch($user['User']['group_id']) {
+					switch ($user['User']['group_id']) {
 						case 1:
 							$this->Session->write('admin', $user);
 							break;
-						case 1:
+						case 2:
 							$this->Session->write('staff', $user);
 							break;
-						case 1:
+						case 3:
 							$this->Session->write('client', $user);
 							break;
 						default:
 							$this->redirect('/login');
 							break;
 					}
-					
+
 					$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert-success'));
 
 					$_redirect = @$this->Session->read('redirect');
@@ -272,7 +266,7 @@ class UsersController extends AppController {
 						$this->redirect("$_redirect");
 					} else {
 						$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert alert-success'));
-						switch($user['User']['group_id']) {
+						switch ($user['User']['group_id']) {
 							case ADMIN_GROUP_ID:
 								$this->redirect('/admin/dashboard');
 								break;
@@ -285,48 +279,6 @@ class UsersController extends AppController {
 							default:
 								$this->redirect('/login');
 						}
-					}
-				} else {
-					$this->check_login_retries();
-					$this->Session->setFlash('Incorrect password. Please try again', 'flash_close', array('class' => 'alert alert-error'));
-				}
-			} else {
-				$this->Session->setFlash('User not found, or is inactive', 'flash_close', array('class' => 'alert alert-error'));
-			}
-		}
-	}
-
-	function staff_login() {
-		$this->set('title_for_layout', 'Login');
-		//die('user_login');
-		if ($this->_user_auth_check()) {
-			$this->redirect('/staff/dashboard');
-		}
-		if ($this->request->is('post')) {
-			$user = $this->User->find(
-					'first', array(
-				'conditions' => array(
-					'User.username' => $this->request->data['User']['username'],
-					'User.status' => 1,
-					'User.group_id  ' => STAFF_GROUP_ID
-				),
-				'recursive' => -1
-					)
-			);
-			if ($user) {
-				if ($user['User']['password'] == sha1($this->request->data['User']['password'])) {
-					$this->Session->write('user', $user);
-					$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert-success'));
-					$this->redirect('/staff/dashboard');
-
-					$_redirect = @$this->Session->read('redirect');
-					if (trim($_redirect) != '') {
-						$this->Session->setFlash('Welcome back!', 'flash_close', array('class' => 'alert alert-success'));
-						$this->Session->delete('redirect');
-						$this->redirect("$_redirect");
-					} else {
-						$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert alert-success'));
-						$this->redirect('/staff/dashboard');
 					}
 				} else {
 					$this->check_login_retries();
@@ -383,55 +335,6 @@ class UsersController extends AppController {
 		}
 	}
 
-	function client_login() {
-		$this->layout = 'client_login';
-		//	$this->set('title_for_layout', 'Client Login');
-		//die('client login');
-		//pr($this->request->data); die;
-		if ($this->_client_auth_check()) {
-			//die('jndkj');
-			$this->redirect('/client/dashboard');
-		}
-
-		if ($this->request->is('post')) {
-			//pr($this->request->data); die;
-			$user = $this->User->find(
-					'first', array(
-				'conditions' => array(
-					'User.username' => $this->request->data['User']['username'],
-					'User.status' => 1,
-					'User.group_id' => CLIENT_GROUP_ID
-				),
-				'recursive' => -1
-					)
-			);
-			//pr($user);die;
-			if ($user) {
-				//echo "hello";die;
-				if ($user['User']['password'] == sha1($this->request->data['User']['password'])) {
-					$this->Session->write('client', $user);
-					$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert-success'));
-					$this->redirect('/client/dashboard');
-
-					$_redirect = @$this->Session->read('redirect');
-					if (trim($_redirect) != '') {
-						$this->Session->setFlash('Welcome back!', 'flash_close', array('class' => 'alert alert-success'));
-						$this->Session->delete('redirect');
-						$this->redirect("$_redirect");
-					} else {
-						$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert alert-success'));
-						$this->redirect('/client/dashboard');
-					}
-				} else {
-					$this->check_login_retries();
-					$this->Session->setFlash('Incorrect password. Please try again', 'flash_close', array('class' => 'alert alert-error'));
-				}
-			} else {
-				$this->Session->setFlash('User not found, or is inactive', 'flash_close', array('class' => 'alert alert-error'));
-			}
-		}
-	}
-
 	function admin_clogin($admin = 0, $username = '', $password = '') {
 		if ($this->_admin_auth_check()) {
 			$admin = 1;
@@ -483,160 +386,85 @@ class UsersController extends AppController {
 		
 	}
 
-	function admin_login() {
-		$this->layout = 'admin_login';
-		$this->set('title_for_layout', 'Admin Login');
-		//die('admin_login');
-		if ($this->_admin_auth_check()) {
-			$this->redirect('/admin/dashboard');
-		}
-		if ($this->request->is('post')) {
-			$user = $this->User->find(
-					'first', array(
-				'conditions' => array(
-					'User.username' => $this->request->data['User']['username'],
-					'User.status' => 1,
-					'User.group_id' => ADMIN_GROUP_ID // Admin user
-				),
-				'recursive' => -1
-					)
-			);
-			if ($user) {
-				if ($user['User']['password'] == sha1($this->request->data['User']['password'])) {
-					$this->Session->write('admin', $user);
-					$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert-success'));
-					$this->redirect('/admin/dashboard');
-
-					$_redirect = @$this->Session->read('redirect');
-					if (trim($_redirect) != '') {
-						$this->Session->setFlash('Welcome back!', 'flash_close', array('class' => 'alert alert-success'));
-						$this->Session->delete('redirect');
-						$this->redirect("$_redirect");
-					} else {
-						$this->Session->setFlash('You are now logged in', 'flash_close', array('class' => 'alert alert-success'));
-						$this->redirect('/admin/dashboard');
-					}
-				} else {
-					$this->Session->setFlash('We didn\'t recognize the password you entered. Please try again', 'flash_close', array('class' => 'alert alert-error'));
-				}
-			} else {
-				$this->Session->setFlash('We didn\'t recognize the Username you entered. Please try again', 'flash_close', array('class' => 'alert alert-error'));
-			}
-		}
-	}
-
 	/**
 	 * logout method
 	 *
 	 * @return void
 	 */
 	public function logout() {
-		$this->Session->delete('user');
-		$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
-		$this->redirect('/login');
+		$_user = $this->logged_in_user;
+		if ($_user) {
+			if (isset($_user['id']) && is_numeric($_user['id'])) {
+				switch ($_user['group_id']) {
+					case 1:
+						$this->redirect('/admin/logout');
+						exit();
+						break;
+					case 2:
+						$this->redirect('/staff/logout');
+						exit();
+						break;
+					case 3:
+						$this->redirect('/client/logout');
+						exit();
+						break;
+					default:
+					//
+				}
+			}
+		}
+		//$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
+		//$this->redirect('/login');
 	}
 
 	/**
-	 * logout method
+	 * Admin logout method
 	 *
 	 * @return void
 	 */
-	public function staff_logout() {
-		$this->Session->delete('user');
-		$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
-		$this->redirect('/login');
-	}
-
-	/**
-	 * admin logout method
-	 *
-	 * @return void
-	 */
-	public function admin_logout() {
+	function admin_logout() {
 		$this->Session->delete('admin');
 		$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
 		$this->redirect('/login');
 	}
 
 	/**
-	 * client logout method
+	 * Staff logout method
 	 *
 	 * @return void
 	 */
-	public function client_logout() {
+	function staff_logout() {
+		$this->Session->delete('staff');
+		$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
+		$this->redirect('/login');
+	}
+
+	/**
+	 * Client logout method
+	 *
+	 * @return void
+	 */
+	function client_logout() {
 		$this->Session->delete('client');
 		$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
 		$this->redirect('/login');
 	}
 
 	public function admin_changepassword() {
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->User->id = $this->_admin_data['id'];
-			$this->User->recursive = -1;
-			$password = $this->User->find('first', array('conditions' => array('User.id' => $this->User->id)));
-			//debug($password);
-			if (empty($this->request->data['User']['old_password'])) {
-				$this->Session->setFlash("Please Enter your Old Password", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (empty($this->request->data['User']['new_password'])) {
-				$this->Session->setFlash("Please Enter your New Password");
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (sha1($this->request->data['User']['old_password']) != $password['User']['password']) {
-				//debug(AuthComponent::password($this->request->data['User']['old_password'])); exit;
-				$this->Session->setFlash("Your old password did not matched.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if ($this->request->data['User']['new_password'] != $this->request->data['User']['new_password']) {
-				$this->Session->setFlash("Confirmed Password mismatch.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else {
-				$this->request->data['User']['password'] = $this->request->data['User']['new_password'];
-				$this->User->save($this->request->data);
-				$this->Session->setFlash("Password Changed successfully.", 'success');
-				$this->redirect(array('controller' => 'Users', 'action' => 'client'));
-			}
-		}
+		$this->_changepassword();
 	}
 
 	public function client_changepassword() {
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->User->id = $this->_client_data['id'];
-			$this->User->recursive = -1;
-			$password = $this->User->find('first', array('conditions' => array('User.id' => $this->User->id)));
-			//debug($password);
-			if (empty($this->request->data['User']['old_password'])) {
-				$this->Session->setFlash("Please Enter your Old Password", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (empty($this->request->data['User']['new_password'])) {
-				$this->Session->setFlash("Please Enter your New Password");
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (sha1($this->request->data['User']['old_password']) != $password['User']['password']) {
-				//debug(AuthComponent::password($this->request->data['User']['old_password'])); exit;
-				$this->Session->setFlash("Your old password did not matched.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if ($this->request->data['User']['new_password'] != $this->request->data['User']['new_password']) {
-				$this->Session->setFlash("Confirmed Password mismatch.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else {
-				$this->request->data['User']['password'] = $this->request->data['User']['new_password'];
-				$this->User->save($this->request->data);
-				$this->Session->setFlash("Password Changed successfully.", 'success');
-				$this->redirect(array('controller' => 'Users', 'action' => 'client'));
-			}
-		}
+		$this->_changepassword();
 	}
 
-	public function admin_reset_password() {
-		if ($this->request->is('post')) {
-			$this->request->data['User']['id'] = $this->request->data['User']['user_id'];
-			$this->User->save($this->request->data);
-			$this->Session->setFlash('Password has been changes', "success");
-			// $this->redirect('controller');
-		}
+	public function staff_changepassword() {
+		$this->_changepassword();
 	}
 
-	public function changepassword() {
+	private function _changepassword() {
 		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->User->id = $this->_user_data['id'];
+			$this->User->id = $this->logged_in_user['id'];
 			$this->User->recursive = -1;
 			$password = $this->User->find('first', array('conditions' => array('User.id' => $this->User->id)));
 			//debug($password);
@@ -654,22 +482,11 @@ class UsersController extends AppController {
 				$this->Session->setFlash("Confirm Password mismatch.");
 				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
 			} else {
-				$password['User']['password'] = $this->request->data['User']['new_password'];
+				$password['User']['password'] = sha1($this->request->data['User']['new_password']);
 				$this->User->save($password);
 				$this->Session->setFlash("Password Changed successfully.");
 				$this->redirect('/');
 			}
-		}
-	}
-
-	public function admin_login_status($id = null) {
-		if ($id == '1') {
-			//debug($this->params);
-			$this->User->query("UPDATE users set status='0' where id='" . $this->params['named']['pass'] . "'");
-			$this->redirect(array('controller' => 'clients', 'action' => 'index'));
-		} else {
-			$this->User->query("UPDATE users set status='1' where id='" . $this->params['named']['pass'] . "'");
-			$this->redirect(array('controller' => 'clients', 'action' => 'index'));
 		}
 	}
 

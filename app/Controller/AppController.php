@@ -46,6 +46,7 @@ class AppController extends Controller {
 	var $_admin_data = array();
 	var $_staff_data = array();
 	var $_client_data = array();
+	var $logged_in_user = array();
 
 	/**
 	 * beforeRender method
@@ -61,18 +62,12 @@ class AppController extends Controller {
 		$_client_data = $this->Session->read('client.User');
 		$this->set('_client_data', $_client_data);
 
-		if ($_admin_data['group_id'] == 1) {
-			$this->set('_is_admin', 1);
-		} else {
-			$this->set('_is_admin', 0);
-		}
-
 		if ($_admin_data) {
-			$_current_login_user = $_admin_data;
+			$this->set('logged_in_user', $_admin_data);
+		} else if ($_staff_data) {
+			$this->set('logged_in_user', $_staff_data);
 		} else if ($_client_data) {
-			$_current_login_user = $_client_data;
-		} else {
-			$_current_login_user = $_staff_data;
+			$this->set('logged_in_user', $_client_data);
 		}
 
 		//$this->log($_current_login_user);
@@ -125,7 +120,7 @@ class AppController extends Controller {
 	 * beforeFilter method
 	 */
 	function beforeFilter() {
-		$_staff_data = $this->Session->read('user.User');
+		$_staff_data = $this->Session->read('staff.User');
 		$this->_staff_data = $_staff_data;
 
 		$_client_data = $this->Session->read('client.User');
@@ -134,6 +129,15 @@ class AppController extends Controller {
 
 		$_admin_data = $this->Session->read('admin.User');
 		$this->_admin_data = $_admin_data;
+
+
+		if ($_admin_data) {
+			$this->logged_in_user = $_admin_data;
+		} else if ($_staff_data) {
+			$this->logged_in_user = $_staff_data;
+		} else if ($_client_data) {
+			$this->logged_in_user = $_client_data;
+		}
 
 		$this->_paginatorURL();
 	}
@@ -198,6 +202,19 @@ class AppController extends Controller {
 
 	function _deny_url() {
 		$action = $this->params->params['action'];
+
+		/*
+		  dpr($this->_deny['admin']);
+		  dpr($this->_deny['staff']);
+		  dpr($this->_deny['client']);
+		  decho('Admin:');
+		  dvd($this->_admin_auth_check());
+		  decho('Staff:');
+		  dvd($this->_staff_auth_check());
+		  decho('Client:');
+		  dvd($this->_client_auth_check());
+		 */
+		//die;
 		// If method requires login then redirect to login page[if logged out] with referer URL, and to dashboard otherwise
 		if (!empty($this->_deny['admin'])) {
 			if (in_array($action, $this->_deny['admin'])) {
@@ -220,7 +237,7 @@ class AppController extends Controller {
 		if (!empty($this->_deny['client'])) {
 			if (in_array($action, $this->_deny['client'])) {
 				if (!$this->_client_auth_check()) {
-					//$this->Session->write('redirect', "/".$this->params->url);
+					$this->Session->write('redirect', "/" . $this->params->url);
 					$this->redirect('/login');
 				}
 			}
