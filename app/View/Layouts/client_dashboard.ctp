@@ -53,10 +53,26 @@
 					<ul class="nav pull-right top-menu">
 						<li><?php echo "<span style='text-transform:uppercase; position:relative;top:20px;' class ='logout'>".$_client_data['username']."</span>" ?></li>         <!--$_admin_data['username']-->
 						<li>
-							<?php echo $this->Html->link("Change password", array("controller" => "users", "action" => "changepassword"), array("class" => "logout")); ?>
+							<?php 
+							echo $this->Html->link(
+									'Change password',
+									'/client/users/changepassword',
+									array(
+										'class' => 'logout'
+										)
+									);
+							?>
 						</li>
 						<li>
-							<?php echo $this->Html->link("Logout", array("controller" => "users", "action" => "logout"), array("class" => "logout")); ?>
+							<?php 
+							echo $this->Html->link(
+									'Logout',
+									'/logout',
+									array(
+										"class" => "logout"
+										)
+									);
+							?>
 						</li>
 					</ul>
 				</div>

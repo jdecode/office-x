@@ -57,10 +57,26 @@
 							?>
 						</li>
 						<li>
-							<?php echo $this->Html->link("Change password", array("controller" => "users", "action" => "changepassword"), array("class" => "logout")); ?>
+							<?php 
+							echo $this->Html->link(
+									'Change password',
+									'/staff/users/changepassword',
+									array(
+										'class' => 'logout'
+										)
+									);
+							?>
 						</li>
 						<li>
-							<?php echo $this->Html->link("Logout", array("controller" => "users", "action" => "logout"), array("class" => "logout")); ?>
+							<?php 
+							echo $this->Html->link(
+									'Logout',
+									'/logout',
+									array(
+										"class" => "logout"
+										)
+									);
+							?>
 						</li>
 					</ul>
 				</div>

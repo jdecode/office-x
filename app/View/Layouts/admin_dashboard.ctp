@@ -58,13 +58,10 @@
 						<li>
 							<?php 
 							echo $this->Html->link(
-									"Change password", 
+									'Change password',
+									'/admin/users/changepassword',
 									array(
-										"controller" => "users", 
-										"action" => "changepassword"
-										), 
-									array(
-										"class" => "logout"
+										'class' => 'logout'
 										)
 									);
 							?>

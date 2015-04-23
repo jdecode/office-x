@@ -28,8 +28,6 @@ class UsersController extends AppController {
 				'admin_delete',
 				'admin_userlist',
 				'admin_changepassword',
-				'admin_reset_password',
-				'admin_login_status',
 				'admin_clogin',
 				'admin_slogin',
 			),
@@ -394,26 +392,29 @@ class UsersController extends AppController {
 	 * @return void
 	 */
 	public function logout() {
-		$_user = $this->Session->read('admin.User');
+		$_user = $this->logged_in_user;
 		if ($_user) {
 			if (isset($_user['id']) && is_numeric($_user['id'])) {
 				switch ($_user['group_id']) {
 					case 1:
 						$this->redirect('/admin/logout');
+						exit();
 						break;
 					case 2:
 						$this->redirect('/staff/logout');
+						exit();
 						break;
 					case 3:
 						$this->redirect('/client/logout');
+						exit();
 						break;
 					default:
-						//
+					//
 				}
 			}
 		}
 		//$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
-		$this->redirect('/login');
+		//$this->redirect('/login');
 	}
 
 	/**
@@ -449,78 +450,21 @@ class UsersController extends AppController {
 		$this->redirect('/login');
 	}
 
-	
-
-
-
 	public function admin_changepassword() {
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->User->id = $this->_admin_data['id'];
-			$this->User->recursive = -1;
-			$password = $this->User->find('first', array('conditions' => array('User.id' => $this->User->id)));
-			//debug($password);
-			if (empty($this->request->data['User']['old_password'])) {
-				$this->Session->setFlash("Please Enter your Old Password", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (empty($this->request->data['User']['new_password'])) {
-				$this->Session->setFlash("Please Enter your New Password");
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (sha1($this->request->data['User']['old_password']) != $password['User']['password']) {
-				//debug(AuthComponent::password($this->request->data['User']['old_password'])); exit;
-				$this->Session->setFlash("Your old password did not matched.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if ($this->request->data['User']['new_password'] != $this->request->data['User']['new_password']) {
-				$this->Session->setFlash("Confirmed Password mismatch.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else {
-				$this->request->data['User']['password'] = $this->request->data['User']['new_password'];
-				$this->User->save($this->request->data);
-				$this->Session->setFlash("Password Changed successfully.", 'success');
-				$this->redirect(array('controller' => 'Users', 'action' => 'client'));
-			}
-		}
+		$this->_changepassword();
 	}
 
 	public function client_changepassword() {
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->User->id = $this->_client_data['id'];
-			$this->User->recursive = -1;
-			$password = $this->User->find('first', array('conditions' => array('User.id' => $this->User->id)));
-			//debug($password);
-			if (empty($this->request->data['User']['old_password'])) {
-				$this->Session->setFlash("Please Enter your Old Password", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (empty($this->request->data['User']['new_password'])) {
-				$this->Session->setFlash("Please Enter your New Password");
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if (sha1($this->request->data['User']['old_password']) != $password['User']['password']) {
-				//debug(AuthComponent::password($this->request->data['User']['old_password'])); exit;
-				$this->Session->setFlash("Your old password did not matched.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else if ($this->request->data['User']['new_password'] != $this->request->data['User']['new_password']) {
-				$this->Session->setFlash("Confirmed Password mismatch.", 'error');
-				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
-			} else {
-				$this->request->data['User']['password'] = $this->request->data['User']['new_password'];
-				$this->User->save($this->request->data);
-				$this->Session->setFlash("Password Changed successfully.", 'success');
-				$this->redirect(array('controller' => 'Users', 'action' => 'client'));
-			}
-		}
+		$this->_changepassword();
 	}
 
-	public function admin_reset_password() {
-		if ($this->request->is('post')) {
-			$this->request->data['User']['id'] = $this->request->data['User']['user_id'];
-			$this->User->save($this->request->data);
-			$this->Session->setFlash('Password has been changes', "success");
-			// $this->redirect('controller');
-		}
+	public function staff_changepassword() {
+		$this->_changepassword();
 	}
 
-	public function changepassword() {
+	private function _changepassword() {
 		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->User->id = $this->_user_data['id'];
+			$this->User->id = $this->logged_in_user['id'];
 			$this->User->recursive = -1;
 			$password = $this->User->find('first', array('conditions' => array('User.id' => $this->User->id)));
 			//debug($password);
@@ -538,22 +482,11 @@ class UsersController extends AppController {
 				$this->Session->setFlash("Confirm Password mismatch.");
 				$this->redirect(array('controller' => 'Users', 'action' => 'changepassword'));
 			} else {
-				$password['User']['password'] = $this->request->data['User']['new_password'];
+				$password['User']['password'] = sha1($this->request->data['User']['new_password']);
 				$this->User->save($password);
 				$this->Session->setFlash("Password Changed successfully.");
 				$this->redirect('/');
 			}
-		}
-	}
-
-	public function admin_login_status($id = null) {
-		if ($id == '1') {
-			//debug($this->params);
-			$this->User->query("UPDATE users set status='0' where id='" . $this->params['named']['pass'] . "'");
-			$this->redirect(array('controller' => 'clients', 'action' => 'index'));
-		} else {
-			$this->User->query("UPDATE users set status='1' where id='" . $this->params['named']['pass'] . "'");
-			$this->redirect(array('controller' => 'clients', 'action' => 'index'));
 		}
 	}
 
