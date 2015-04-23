@@ -1,0 +1,26 @@
+/* 
+    Created on : 9 Mar, 2015, 11:35:39 PM
+    Author     : jd
+*/
+
+.white { color: white !important; }
+.bold { font-weight: bold; }
+.s24 { font-size: 24px; }
+.centered {}
+.folders { margin-top: 10px !important;}
+
+ul.folders {
+    padding-left: 10px;
+}
+
+#response .scrollable {
+    padding: 0 25px;
+}
+
+#response .scrollable .checkbox {
+    width: 49%;
+    float: left;
+}
+
+
+

@@ -30,8 +30,13 @@ Router::connect('/', array('controller' => 'users', 'action' => 'login'));
 Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 
+Router::connect('/admin', array('controller' => 'users', 'action' => 'dashboard', 'admin' => true));
 Router::connect('/admin/dashboard', array('controller' => 'users', 'action' => 'dashboard', 'admin' => true));
+
+Router::connect('/staff', array('controller' => 'users', 'action' => 'dashboard'));
 Router::connect('/staff/dashboard', array('controller' => 'users', 'action' => 'dashboard'));
+
+Router::connect('/client', array('controller' => 'users', 'action' => 'dashboard', 'client' => true));
 Router::connect('/client/dashboard', array('controller' => 'users', 'action' => 'dashboard', 'client' => true));
 
 /**

@@ -75,6 +75,8 @@ class AppController extends Controller {
 			$_current_login_user = $_staff_data;
 		}
 
+		//$this->log($_current_login_user);
+
 		/**
 		 * Load Folders
 		 */
@@ -132,6 +134,7 @@ class AppController extends Controller {
 
 		$_admin_data = $this->Session->read('admin.User');
 		$this->_admin_data = $_admin_data;
+
 		$this->_paginatorURL();
 	}
 
@@ -142,12 +145,11 @@ class AppController extends Controller {
 	 */
 	function _admin_auth_check() {
 		$_user = $this->Session->read('admin.User');
-		//pr($_user); die('admin');	
 		if (isset($_user['id']) && is_numeric($_user['id']) && $_user['group_id'] == ADMIN_GROUP_ID) { // Admin group_id is 1
 			$this->layout = 'admin_dashboard';
 			return true;
 		} else {
-			$this->layout = 'admin_login';
+			$this->layout = 'login';
 			return false;
 		}
 	}
@@ -201,7 +203,7 @@ class AppController extends Controller {
 			if (in_array($action, $this->_deny['admin'])) {
 				if (!$this->_admin_auth_check()) {
 					$this->Session->write('admin_redirect', "/" . $this->params->url);
-					$this->redirect('/admin');
+					$this->redirect('/login');
 				}
 			}
 		}
@@ -219,7 +221,7 @@ class AppController extends Controller {
 			if (in_array($action, $this->_deny['client'])) {
 				if (!$this->_client_auth_check()) {
 					//$this->Session->write('redirect', "/".$this->params->url);
-					$this->redirect('/client');
+					$this->redirect('/login');
 				}
 			}
 		}
