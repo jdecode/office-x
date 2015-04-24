@@ -257,7 +257,7 @@ ul.top-menu > li > .logout {
     height:17px;
     width:17px;
     display:inline-block;
-    background: url("../img/nav-expand.png") no-repeat top;
+    /*background: url("../img/nav-expand.png") no-repeat top;*/
     border-radius:3px;
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
@@ -266,7 +266,7 @@ ul.top-menu > li > .logout {
     top:15px;
 }
 .active .dcjq-icon {
-    background: url("../img/nav-expand.png") no-repeat bottom;
+    /*background: url("../img/nav-expand.png") no-repeat bottom;*/
     border-radius:3px;
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
@@ -420,9 +420,9 @@ header {
 
 .wrapper {
     display: inline-block;
-    margin-top: 60px;
-    padding-left: 15px;
-    padding-right: 15px;
+    margin-top: 2px;
+    padding-left: 30px;
+    padding-right: 30px;
     padding-bottom: 15px;
     padding-top: 0px;
     width: 100%;
