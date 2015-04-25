@@ -21,7 +21,7 @@
  */
 App::uses('Controller', 'Controller');
 App::uses('User', 'Model');
-App::uses('Message', 'Model');
+App::uses('Folder', 'Model');
 
 /**
  * Application Controller
@@ -70,50 +70,13 @@ class AppController extends Controller {
 			$this->set('logged_in_user', $_client_data);
 		}
 
-		//$this->log($_current_login_user);
 
 		/**
 		 * Load Folders
 		 */
-		/*
-		  $this->Message = new Message();
-		  $_Inbox = $this->Message->find('count', array('conditions' => array('AND' => array('user2id' => $_current_login_user['id']), array('Message.status' => 0))));
-		  $_Sent = $this->Message->find('count', array('conditions' => array('AND' => array('user_id' => $_current_login_user['id']), array('Message.status' => 0))));
-		  $_Draft = $this->Message->find('count', array('conditions' => array('AND' => array('user_id' => $_current_login_user['id']), array('user2id' => 0), array('Message.status' => 4))));
-		  //$_shared = $this->Message->find('count', array('conditions' => array('AND' => array('user_id' => $_current_login_user['id']), array('user2id' => 0), array('Message.status' => 5))));
-		  $this->ManageFolder = new ManageFolder();
-		  $_folders = $this->ManageFolder->find(
-		  'all', array(
-		  'conditions' => array(
-		  'ManageFolder.status' => 1,
-		  'ManageFolder.user_id ' => $_current_login_user['id']  // $this->_admin_data['id']
-		  )
-		  )
-		  );
-		  $__folders = array();
-		  $_folder = array();
-		  $i = 0;
-
-		  foreach ($_folders as $_f) {
-		  $_f_data = $this->Message->find(
-		  'count', array(
-		  'conditions' => array(
-		  'Message.user_id' => $_current_login_user['id'],
-		  'Message.status' => 0,
-		  'Message.folder_id' => $_f['ManageFolder']['id'],
-		  )
-		  )
-		  );
-		  $__folders[$i] = $_f;
-		  $__folders[$i]['ManageFolder']['count'] = $_f_data;
-		  $i++;
-		  }
-		  $this->set('_folderf', $_folder);
-		  $this->set('_folders', $__folders);
-		  $this->set('_Inbox', $_Inbox);
-		  $this->set('_Sent', $_Sent);
-		  $this->set('_Draft', $_Draft);
-		 */
+		
+		//$this->load_folders();
+		  
 	}
 
 	/**
@@ -258,4 +221,13 @@ class AppController extends Controller {
 		$this->set('paginatorURL', array($passed, '?' => http_build_query($retain)));
 	}
 
+	function load_folders() {
+		$this->Folder = new Folder();
+		$folders = $this->Folder->find('list', array('conditions' => array('Folder.type' => $this->logged_in_user['group_id'])));
+		$this->set('folder', $folders);
+	}
+
+	function _generate_random_number() {
+		return sha1(rand().time().microtime().rand().sha1(time()));
+	}
 }

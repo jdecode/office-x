@@ -22,7 +22,9 @@ class UsersController extends AppController {
 			'admin' => array(
 				'admin_dashboard',
 				'admin_logout',
-				'admin_index',
+				'_admin_index',
+				'admin_staff',
+				'admin_clients',
 				'admin_view',
 				'admin_add',
 				'admin_delete',
@@ -30,6 +32,10 @@ class UsersController extends AppController {
 				'admin_changepassword',
 				'admin_clogin',
 				'admin_slogin',
+				'admin_addstaff',
+				'admin_addclient',
+				'admin_update_status',
+				'admin_view',
 			),
 			'staff' => array(
 				'staff_dashboard',
@@ -52,23 +58,20 @@ class UsersController extends AppController {
 	 */
 	public $components = array('Paginator');
 
-	public function admin_index() {
+	public function _admin_index($type = 0) {
 		$this->User->recursive = 0;
+		if ($type) {
+			$this->Paginator->settings = array('conditions' => array('User.group_id' => $type));
+		}
 		$this->set('users', $this->Paginator->paginate());
 	}
 
-	function _load_view($id) {
-		//$this->layout = 'admin';
-		$this->loadModel('Message');
-		$this->User->id = $id;
-		if (!$this->User->exists()) {
-			throw new NotFoundException(__('Invalid user'));
-		} else {
-			$this->set('user', $this->User->read(null, $id));
-			$this->set('document', $this->Message->find('all', array('conditions' => array('Message.user2id' => $id))));
-			//$this->loadModel('Upload');
-			//$this->set('upload', $this->Upload->find('all', array('conditions' => array('user_id' => $this->User->id))));
-		}
+	public function admin_staff() {
+		$this->_admin_index(2);
+	}
+
+	public function admin_clients() {
+		$this->_admin_index(3);
 	}
 
 	/**
@@ -78,18 +81,34 @@ class UsersController extends AppController {
 	 * @param string $id
 	 * @return void
 	 */
-	public function admin_view($id = null) {
+	public function view($id = null) {
 		$this->_load_view($id);
 	}
 
 	/**
-	 * view method
+	 * admin_view method
 	 *
 	 * @param string $id
 	 * @return void
 	 */
-	public function view($id = null) {
-		$this->_load_view($id);
+	public function admin_view($id = null) {
+		if ($this->request->is('post')) {
+			if(
+					isset($this->request->data['User']['reset_password']) 
+					&& trim($this->request->data['User']['reset_password']) != '') {
+				$user = $this->User->read(null, $id);
+				if($user) {
+					$user['User']['password'] = sha1($this->request->data['User']['reset_password']);
+					if($this->User->save($user)) {
+						$this->Session->setFlash('Password has been updated successfully!', 'success');
+						return $this->redirect('/admin/users/view/'.$id);
+					}
+				}
+			}
+		}
+		$departments = $this->User->Department->find('list', array('conditions' => array('status' => 1)));
+		$this->set(compact('departments'));
+		$this->set('user', $this->User->read(null, $id));
 	}
 
 	/**
@@ -108,15 +127,73 @@ class UsersController extends AppController {
 			}
 		}
 		$groups = $this->User->Group->find('list');
-		$departments = $this->User->Department->find('list');
+		$departments = $this->User->Department->find('list', array('conditions' => array('status' => 1)));
 		$this->set(compact('groups', 'departments'));
+	}
+
+	/**
+	 * addstaff method
+	 *
+	 * @return void
+	 */
+	public function admin_addstaff() {
+		if ($this->request->is('post')) {
+			$this->_save_user(2);
+		}
+		$groups = $this->User->Group->find('list');
+		$departments = $this->User->Department->find('list', array('conditions' => array('status' => 1)));
+		$this->set(compact('groups', 'departments'));
+	}
+
+	/**
+	 * addclient method
+	 *
+	 * @return void
+	 */
+	public function admin_addclient() {
+		if ($this->request->is('post')) {
+			$this->_save_user(3);
+		}
+		$groups = $this->User->Group->find('list');
+		$departments = $this->User->Department->find('list', array('conditions' => array('status' => 1)));
+		$this->set(compact('groups', 'departments'));
+	}
+
+	function _save_user($group_id = 0) {
+		$_user = $this->User->find(
+				'count', array(
+			'conditions' => array(
+				'OR' => array(
+					'User.username' => $this->request->data['User']['username'],
+					'User.email' => $this->request->data['User']['email'],
+				)
+			)
+				)
+		);
+		if (!$_user && $group_id) {
+			$this->User->create();
+			$user = array('User' => array('group_id' => $group_id, 'status' => 1));
+			$user['User']['username'] = $this->request->data['User']['username'];
+			$user['User']['email'] = $this->request->data['User']['email'];
+			$user['User']['name'] = $this->request->data['User']['name'];
+			$user['User']['department_id'] = isset($this->request->data['User']['department_id']) ? $this->request->data['User']['department_id'] : 0;
+			$user['User']['password'] = sha1($this->request->data['User']['password']);
+			if ($this->User->save($user)) {
+				$this->Session->setFlash(__('The user has been saved.'));
+				return $this->redirect(array('action' => ($group_id == 2 ? 'staff' : 'clients')));
+			} else {
+				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+			}
+		} else {
+			$this->Session->setFlash('Another user with this username or email already exists. Please, try a different username.');
+		}
 	}
 
 	/**
 	 * Admin user's dashboard
 	 */
 	function admin_dashboard() {
-		$this->log('From within admin_dashboard');
+		$this->redirect('/admin/messages/inbox');
 		$this->layout = 'admin_dashboard';
 		if ($this->request->is('post')) {
 			//pr($this->request->data);
@@ -160,7 +237,7 @@ class UsersController extends AppController {
 			$this->request->data = $this->User->find('first', $options);
 		}
 		$groups = $this->User->Group->find('list');
-		$departments = $this->User->Department->find('list');
+		$departments = $this->User->Department->find('list', array('conditions' => array('status' => 1)));
 		$this->set(compact('groups', 'departments'));
 	}
 
@@ -488,6 +565,25 @@ class UsersController extends AppController {
 				$this->redirect('/');
 			}
 		}
+	}
+
+	function admin_update_status($id = null) {
+		$return = 0;
+		$this->User->id = $id;
+		if ($this->User->exists()) {
+			$user = $this->User->read(null, $id);
+			if ($user['User']['status'] == 0) {
+				$return = 1;
+				$user['User']['status'] = 1;
+			} else {
+				$return = 2;
+				$user['User']['status'] = 0;
+			}
+			if (!$this->User->save($user)) {
+				$return = 0;
+			}
+		}
+		$this->set('return', $return);
 	}
 
 }

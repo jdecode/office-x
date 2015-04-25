@@ -1,5 +1,7 @@
 <?php
+
 App::uses('AppController', 'Controller');
+
 /**
  * Folders Controller
  *
@@ -8,44 +10,82 @@ App::uses('AppController', 'Controller');
  */
 class FoldersController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
+	/**
+	 * beforeFilter method
+	 */
+	function beforeFilter() {
+		parent::beforeFilter();
+		/**
+		 * Stores array of deniable methods, without logging in.
+		 */
+		$this->_deny = array(
+			'admin' => array(
+				'_admin_index',
+				'admin_index',
+				'admin_staff',
+				'admin_clients',
+				'admin_view',
+				'admin_add',
+				'admin_delete',
+				'admin_update_status',
+			),
+			'staff' => array(
+			),
+			'client' => array(
+			),
+		);
+		$this->_deny_url($this->_deny);
+	}
+
 	public $components = array('Paginator');
 
-/**
- * index method
- *
- * @return void
- */
-	public function index() {
+	/**
+	 * index method
+	 *
+	 * @return void
+	 */
+	public function _admin_index($type = 0) {
 		$this->Folder->recursive = 0;
-		$this->set('folders', $this->Paginator->paginate());
-	}
-
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
-		if (!$this->Folder->exists($id)) {
-			throw new NotFoundException(__('Invalid folder'));
+		if ($type) {
+			$this->Paginator->settings = array('conditions' => array('Folder.type' => $type));
 		}
-		$options = array('conditions' => array('Folder.' . $this->Folder->primaryKey => $id));
-		$this->set('folder', $this->Folder->find('first', $options));
+		$this->set('folders', $this->Paginator->paginate());
+		$this->set('_type', $type);
 	}
 
-/**
- * add method
- *
- * @return void
- */
-	public function add() {
+	public function admin_index() {
+		$this->_admin_index();
+	}
+
+	public function admin_all() {
+		$this->_admin_index(1);
+	}
+
+	public function admin_staff() {
+		$this->_admin_index(2);
+	}
+
+	public function admin_clients() {
+		$this->_admin_index(3);
+	}
+
+	/**
+	 * view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
+	public function admin_view($id = 0) {
+		$this->_admin_index($id);
+	}
+
+	/**
+	 * add method
+	 *
+	 * @return void
+	 */
+	public function admin_add() {
 		if ($this->request->is('post')) {
 			$this->Folder->create();
 			if ($this->Folder->save($this->request->data)) {
@@ -57,13 +97,13 @@ class FoldersController extends AppController {
 		}
 	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * edit method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
 	public function edit($id = null) {
 		if (!$this->Folder->exists($id)) {
 			throw new NotFoundException(__('Invalid folder'));
@@ -81,13 +121,13 @@ class FoldersController extends AppController {
 		}
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * delete method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
 	public function delete($id = null) {
 		$this->Folder->id = $id;
 		if (!$this->Folder->exists()) {
@@ -100,5 +140,24 @@ class FoldersController extends AppController {
 			$this->Session->setFlash(__('The folder could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
+	}
+
+	function admin_update_status($id = null) {
+		$return = 0;
+		$this->Folder->id = $id;
+		if ($this->Folder->exists()) {
+			$folder = $this->Folder->read(null, $id);
+			if($folder['Folder']['status'] == 0) {
+				$return = 1;
+				$folder['Folder']['status'] = 1;
+			} else {
+				$return = 2;
+				$folder['Folder']['status'] = 0;
+			}
+			if(!$this->Folder->save($folder)) {
+				$return = 0;
+			}
+		}
+		$this->set('return', $return);
 	}
 }
