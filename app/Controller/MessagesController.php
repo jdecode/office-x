@@ -236,17 +236,29 @@ class MessagesController extends AppController {
 	function _save_message() {
 		$message = array('Message' => array('message' => $this->request->data['Message']['description']));
 		$message['Message']['user_id'] = $this->logged_in_user['id'];
-		if ($this->request->data['Message']['_core_type'] == 1) {
-			$message['Message']['user2id'] = 0;
-			$message['Message']['folder_id'] = 0;
+		if($this->logged_in_user['group_id'] == 1) {
+			if ($this->request->data['Message']['_core_type'] == 1) {
+				$message['Message']['user2id'] = 0;
+				$message['Message']['folder_id'] = 0;
+			}
+			if ($this->request->data['Message']['_core_type'] == 2) {
+				$message['Message']['user2id'] = $this->request->data['Message']['_staff_users'];
+				$message['Message']['folder_id'] = $this->request->data['Message']['_staff_folders'];
+			}
+			if ($this->request->data['Message']['_core_type'] == 3) {
+				$message['Message']['user2id'] = $this->request->data['Message']['_client_users'];
+				$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
+			}
 		}
-		if ($this->request->data['Message']['_core_type'] == 2) {
-			$message['Message']['user2id'] = $this->request->data['Message']['_staff_users'];
-			$message['Message']['folder_id'] = $this->request->data['Message']['_staff_folders'];
-		}
-		if ($this->request->data['Message']['_core_type'] == 3) {
-			$message['Message']['user2id'] = $this->request->data['Message']['_client_users'];
-			$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
+		if($this->logged_in_user['group_id'] == 2) {
+			if ($this->request->data['Message']['_core_type'] == 1) {
+				$message['Message']['user2id'] = 1;
+				$message['Message']['folder_id'] = 0;
+			}
+			if ($this->request->data['Message']['_core_type'] == 0) {
+				$message['Message']['user2id'] = 0;
+				$message['Message']['folder_id'] = 0;
+			}
 		}
 		$this->Message->create();
 		$this->Message->save($message);
