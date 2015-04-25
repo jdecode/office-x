@@ -2256,3 +2256,7 @@ aside {
     width: 20%;
     margin-top: 2px;
 }
+
+._document {
+    min-height: 30px;
+}

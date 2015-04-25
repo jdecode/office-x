@@ -193,7 +193,7 @@ class UsersController extends AppController {
 	 * Admin user's dashboard
 	 */
 	function admin_dashboard() {
-		$this->log('From within admin_dashboard');
+		$this->redirect('/admin/messages/inbox');
 		$this->layout = 'admin_dashboard';
 		if ($this->request->is('post')) {
 			//pr($this->request->data);

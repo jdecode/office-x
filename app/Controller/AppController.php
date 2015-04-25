@@ -226,4 +226,8 @@ class AppController extends Controller {
 		$folders = $this->Folder->find('list', array('conditions' => array('Folder.type' => $this->logged_in_user['group_id'])));
 		$this->set('folder', $folders);
 	}
+
+	function _generate_random_number() {
+		return sha1(rand().time().microtime().rand().sha1(time()));
+	}
 }

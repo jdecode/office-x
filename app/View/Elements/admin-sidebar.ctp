@@ -1,40 +1,30 @@
 <?php
 if (
-		$this->params['controller'] == 'users' 
-		&& 
+		$this->params['controller'] == 'users' &&
 		(
-			$this->params['action'] == 'admin_clients' 
-			|| $this->params['action'] == 'admin_addclient'
+		$this->params['action'] == 'admin_clients' || $this->params['action'] == 'admin_addclient'
 		)
-	) {
+) {
 	$client_class = 'active';
 } else {
 	$client_class = '';
-	if($this->params['action'] == 'admin_view' && isset($user['User']['group_id']) && $user['User']['group_id'] == 3) {
+	if ($this->params['action'] == 'admin_view' && isset($user['User']['group_id']) && $user['User']['group_id'] == 3) {
 		$client_class = 'active';
 	}
 }
 
 if (
-		$this->params['controller'] == 'users' 
-		&& 
+		$this->params['controller'] == 'users' &&
 		(
-			$this->params['action'] == 'admin_staff' 
-			|| $this->params['action'] == 'admin_addstaff'
+		$this->params['action'] == 'admin_staff' || $this->params['action'] == 'admin_addstaff'
 		)
-	) {
+) {
 	$staffs_class = 'active';
 } else {
 	$staffs_class = '';
-	if($this->params['action'] == 'admin_view' && isset($user['User']['group_id']) &&	$user['User']['group_id'] == 2) {
+	if ($this->params['action'] == 'admin_view' && isset($user['User']['group_id']) && $user['User']['group_id'] == 2) {
 		$staffs_class = 'active';
 	}
-}
-
-if ($this->params['controller'] == 'uploads') {
-	$uploads_class = 'active';
-} else {
-	$uploads_class = '';
 }
 
 if ($this->params['controller'] == 'departments') {
@@ -53,6 +43,22 @@ if ($this->params['controller'] == 'users' && $this->params['action'] == 'admin_
 	$rep_class = 'active';
 } else {
 	$rep_class = '';
+}
+
+if (
+		$this->params['controller'] == 'messages' 
+		&& 
+		(
+			$this->params['action'] == 'admin_inbox'
+			|| $this->params['action'] == 'admin_sent'
+			|| $this->params['action'] == 'admin_draft'
+			|| $this->params['action'] == 'admin_add'
+		)
+	) {
+	$inbox_class = 'active';
+	$manage_folder = '';
+} else {
+	$inbox_class = '';
 }
 ?>
 
@@ -76,15 +82,14 @@ if ($this->params['controller'] == 'users' && $this->params['action'] == 'admin_
 				?>
 			</li>
 			<li>
-				<?php 
+				<?php
 				echo $this->Html->link(
-						'New Staff',
-						array(
-							'controller' => 'users', 
-							'action' => 'addstaff', 
-							'admin' => true
-							)
-						);
+						'New Staff', array(
+					'controller' => 'users',
+					'action' => 'addstaff',
+					'admin' => true
+						)
+				);
 				?>
 			</li>
 		</ul>
@@ -107,88 +112,78 @@ if ($this->params['controller'] == 'users' && $this->params['action'] == 'admin_
 				?>
 			</li>
 			<li>
-				<?php 
+				<?php
 				echo $this->Html->link(
-						'New Client',
-						array(
-							'controller' => 'users', 
-							'action' => 'addclient', 
-							'admin' => true
-							)
-						);
+						'New Client', array(
+					'controller' => 'users',
+					'action' => 'addclient',
+					'admin' => true
+						)
+				);
 				?>
 			</li>
 		</ul>
 	</li>
-	<li class="sub-menu">
-		<!--
-		<a href="javascript:;"  class="<?php echo $uploads_class; ?>">
-			<i class="fa fa-desktop"></i>
-			<span>Folders</span>
-		</a>
-		-->
-		<ul class="sub">
-			<?php
-			/*
-			  ?>
-			  <li>
-			  <?php
-			  echo $this->Html->link(
-			  'Received ('.$_Inbox.')',
-			  array(
-			  'controller' => 'uploads',
-			  'action' => 'inbox'
-			  )
-			  );
-			  ?>
-			  </li>
-			  <li>
-			  <?php
-			  echo $this->Html->link(
-			  'Uploaded ('.$_Draft.')',
-			  array(
-			  'controller' => 'uploads',
-			  'action' => 'draft'
-			  )
-			  );
-			  ?>
-			  </li>
-			  <li>
-			  <?php
-			  echo $this->Html->link(
-			  'Sent ('.$_Sent.')',
-			  array(
-			  'controller' => 'uploads',
-			  'action' => 'sent'
-			  )
-			  );
-			  ?>
-			  </li>
-			  <?php
-			 */
-			if (isset($_folders) && is_array($_folders) && count($_folders)) {
-				foreach ($_folders as $_folder) {
-					?>
-					<li>
-						<?php
-						echo $this->Html->link(
-								ucwords(strtolower($_folder['ManageFolder']['Name'] . ' (' . $_folder['ManageFolder']['count'] . ')')), array(
-							'controller' => 'uploads',
-							'action' => 'folder/' . $_folder['ManageFolder']['id'],
-							'admin' => true
-								)
-						);
-						?>
-					</li>
-					<?php
-				}
-			}
-			?>
 
+	<li class="sub-menu">
+		
+			<?php
+			echo $this->Html->link(
+					'<i class="fa fa-desktop"></i> Messages', '/admin/messages/inbox', array(
+				"class" => "$inbox_class",
+				"escape" => false
+					)
+			);
+			?>
+		
+		<ul class="sub">
+			<li>
+				<?php
+				echo $this->Html->link(
+						'Compose', array(
+					'controller' => 'messages',
+					'action' => 'admin_add',
+					'admin' => true
+						), array(
+					'class' => ''
+						)
+				);
+				?>
+			</li>
+			<li>
+				<?php
+				echo $this->Html->link(
+						'Inbox', '/admin/messages/inbox', array(
+					"class" => '',
+					"escape" => false
+						)
+				);
+				?>
+			</li>
+			<li>
+				<?php
+				echo $this->Html->link(
+						'Sent', '/admin/messages/sent', array(
+					"class" => '',
+					"escape" => false
+						)
+				);
+				?>
+			</li>
+			<li>
+				<?php
+				echo $this->Html->link(
+						'Drafts', '/admin/messages/draft', array(
+					"class" => '',
+					"escape" => false
+						)
+				);
+				?>
+			</li>
 		</ul>
 	</li>
+
 	<li class="sub-menu">
-		<a href="javascript:;"  class="<?php echo $uploads_class; ?>">
 			<?php
 			echo $this->Html->link(
 					'<i class="fa fa-desktop"></i> Folders', '/admin/folders', array(
@@ -197,22 +192,7 @@ if ($this->params['controller'] == 'users' && $this->params['action'] == 'admin_
 					)
 			);
 			?>
-		</a>
 		<ul class="sub">
-			<li>
-				<?php
-				echo $this->Html->link(
-						'Compose', 
-						array(
-					'controller' => 'uploads',
-					'action' => 'add'
-						),
-						array(
-							'class' => ''
-						)
-				);
-				?>
-			</li>
 			<?php
 			$folders = array(0 => 'All', 1 => 'Admin', 2 => 'Staff', 3 => 'Client');
 			foreach ($folders as $k => $folder) {

@@ -35,7 +35,7 @@ echo $this->Session->flash();
 				<th>Name</th>
 				<th>Type</th>
 				<th>Status</th>
-				<th>Action</th>
+				<!--<th>Action</th>-->
 			</tr>
 		</thead>
 		<tbody>
@@ -67,7 +67,7 @@ echo $this->Session->flash();
 						;
 						?>
 					</td>
-					<td>
+					<!--<td>
 						<?php
 						echo $this->Html->link(
 								'<i class="fa fa-check"></i> View', '/admin/folders/documents/' . $folder['Folder']['id'], array(
@@ -76,7 +76,7 @@ echo $this->Session->flash();
 								)
 						);
 						?>
-					</td>
+					</td>-->
 				</tr>
 				</tr>
 			<?php } ?>

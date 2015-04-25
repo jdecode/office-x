@@ -109,7 +109,7 @@
 
 					</div><!-- /row -->
 
-				</section><! --/wrapper -->
+				</section><!-- /wrapper -->
 			</section><!-- /MAIN CONTENT -->
 
 			<!--main content end-->
