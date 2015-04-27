@@ -1,6 +1,7 @@
 <?php
 
 App::uses('AppController', 'Controller');
+App::uses('Folder', 'Model');
 
 /**
  * Users Controller
@@ -279,6 +280,9 @@ class UsersController extends AppController {
 	}
 
 	public function staff_dashboard() {
+		//$this->loadModel('Folder');
+		//prx($this->Folder->find('all'));
+
 		$this->recursive = '0';
 		//$this->redirect('/staff/uploads/inbox');
 		//$this->set('file', $this->Upload->find('all', array('conditions' => array('Upload.user_id' => $this->Auth->user('id')))));

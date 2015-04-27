@@ -41,8 +41,7 @@ class AppController extends Controller {
 		'limit' => 10,
 	);
 	var $helpers = array('Html', 'Form', 'Session', 'Js', 'Time');
-	var $components = array('RequestHandler', 'Session', 'Cookie', 'Paginator'
-	);
+	var $components = array('RequestHandler', 'Session', 'Cookie', 'Paginator');
 	var $_admin_data = array();
 	var $_staff_data = array();
 	var $_client_data = array();
@@ -134,6 +133,7 @@ class AppController extends Controller {
 				( $_user['group_id'] == STAFF_GROUP_ID)
 		) {
 			$this->layout = 'staff_dashboard';
+			//$this->_get_staff_folders();
 			return true;
 		} else {
 			$this->layout = 'login';
@@ -176,7 +176,7 @@ class AppController extends Controller {
 		  dvd($this->_staff_auth_check());
 		  decho('Client:');
 		  dvd($this->_client_auth_check());
-		 */
+		*/
 		//die;
 		// If method requires login then redirect to login page[if logged out] with referer URL, and to dashboard otherwise
 		if (!empty($this->_deny['admin'])) {
@@ -222,12 +222,23 @@ class AppController extends Controller {
 	}
 
 	function load_folders() {
-		$this->Folder = new Folder();
-		$folders = $this->Folder->find('list', array('conditions' => array('Folder.type' => $this->logged_in_user['group_id'])));
-		$this->set('folder', $folders);
+		$this->loadModel('Folder');
+		$folders = $this->Folder->find(
+				'list', 
+				array(
+					'conditions' => array(
+						'Folder.type' => $this->logged_in_user['group_id']
+					),
+				)
+			);
+		$this->set('folders', $folders);
 	}
 
 	function _generate_random_number() {
 		return sha1(rand().time().microtime().rand().sha1(time()));
+	}
+
+	function _get_staff_folders() {
+		$this->load_folders();
 	}
 }

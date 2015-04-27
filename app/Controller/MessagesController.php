@@ -2,6 +2,7 @@
 
 App::uses('AppController', 'Controller');
 App::uses('Document', 'Model');
+App::uses('Folder', 'Model');
 
 /**
  * Messages Controller
@@ -26,15 +27,27 @@ class MessagesController extends AppController {
 				'admin_inbox',
 				'admin_sent',
 				'admin_draft',
+				'admin_view',
 			),
 			'staff' => array(
 				'_staff_index',
 				'staff_add',
 				'staff_inbox',
 				'staff_sent',
+				'staff_view',
 				'staff_draft',
+				'staff_folder',
+				'staff_custom_folder',
 			),
 			'client' => array(
+				'_client_index',
+				'client_add',
+				'client_inbox',
+				'client_sent',
+				'client_draft',
+				'client_folder',
+				'client_view',
+				'client_custom_folder',
 			),
 		);
 		$this->_deny_url($this->_deny);
@@ -49,27 +62,30 @@ class MessagesController extends AppController {
 	 * @return void
 	 */
 	public function _admin_index($folder_id = 0, $sent = false, $draft = false) {
-		if($sent) {
+		if ($sent) {
 			$this->Paginator->settings = array(
 				'conditions' => array(
 					'Message.user_id' => $this->logged_in_user['id'],
 					'Message.folder_id !=' => $folder_id,
-					)
-				);
-		} else if($draft) {
+				),
+				'order' => 'Message.id DESC'
+			);
+		} else if ($draft) {
 			$this->Paginator->settings = array(
 				'conditions' => array(
 					'Message.user_id' => $this->logged_in_user['id'],
 					'Message.folder_id' => $folder_id,
-					)
-				);
+				),
+				'order' => 'Message.id DESC'
+			);
 		} else {
 			$this->Paginator->settings = array(
 				'conditions' => array(
 					'Message.user2id' => $this->logged_in_user['id'],
-					'Message.folder_id' => $folder_id,
-					)
-				);
+					//'Message.folder_id' => $folder_id,
+				),
+				'order' => 'Message.id DESC'
+			);
 		}
 		$this->Message->recursive = 0;
 		$this->set('messages', $this->Paginator->paginate());
@@ -96,30 +112,47 @@ class MessagesController extends AppController {
 	 * @return void
 	 */
 	public function _staff_index($folder_id = 0, $sent = false, $draft = false) {
-		if($sent) {
+		if ($sent) {
 			$this->Paginator->settings = array(
 				'conditions' => array(
 					'Message.user_id' => $this->logged_in_user['id'],
-					'Message.folder_id !=' => $folder_id,
-					)
-				);
-		} else if($draft) {
+					'Message.user2id !=' => 0,
+					//'Message.folder_id !=' => $folder_id,
+				),
+				'order' => 'Message.id DESC'
+			);
+		} else if ($draft) {
 			$this->Paginator->settings = array(
 				'conditions' => array(
-					'Message.user_id' => $this->logged_in_user['id'],
-					'Message.folder_id' => $folder_id,
-					)
-				);
+					'OR' => array(
+						array(
+						'Message.user_id' => $this->logged_in_user['id'],
+						'Message.user2id' => 0,
+						'Message.folder_id' => $folder_id,
+							),
+						array(
+						'Message.user2id' => $this->logged_in_user['id'],
+						//'Message.user2id' => 0,
+						'Message.folder_id' => $folder_id,
+						)
+						),
+				),
+				'order' => 'Message.id DESC'
+			);
 		} else {
 			$this->Paginator->settings = array(
 				'conditions' => array(
 					'Message.user2id' => $this->logged_in_user['id'],
 					'Message.folder_id' => $folder_id,
-					)
-				);
+				),
+				'order' => 'Message.id DESC'
+			);
 		}
 		$this->Message->recursive = 0;
-		$this->set('messages', $this->Paginator->paginate());
+		//$this->Paginator->settings = array();
+		$messages = $this->Paginator->paginate();
+		//prx($messages);
+		$this->set('messages', $messages);
 	}
 
 	function staff_inbox() {
@@ -137,14 +170,153 @@ class MessagesController extends AppController {
 		$this->set('_label', 'Drafts');
 	}
 
+	function staff_folder($id = 0) {
+		switch($id) {
+			case 24:
+				$this->_staff_index($id);
+				$label = 'Received';
+				break;
+			case 26:
+				$this->_staff_index($id, 0, 1);
+				$label = 'Uploaded by Scan';
+				break;
+			case 27:
+				$this->_staff_index($id, 0, 1);
+				$label = 'Shared';
+				break;
+			default:
+				$label = 'Received';
+		}
+		$this->set('_label', $label);
+	}
+
+
+	function staff_custom_folder($id = 0) {
+		$this->_staff_index($id, 0, 1);
+	}
+
+
+
+
+
+	function client_custom_folder($id = 0) {
+		$this->_client_index($id, 0, 1);
+	}
+
+
 	/**
-	 * view method
+	 * _client_index method
+	 *
+	 * @return void
+	 */
+	public function _client_index($folder_id = 0, $sent = false, $draft = false) {
+		if ($sent) {
+			$this->Paginator->settings = array(
+				'conditions' => array(
+					'Message.user_id' => $this->logged_in_user['id'],
+					'Message.user2id !=' => 0,
+					//'Message.folder_id !=' => $folder_id,
+				),
+				'order' => 'Message.id DESC'
+			);
+		} else if ($draft) {
+			$this->Paginator->settings = array(
+				'conditions' => array(
+					'OR' => array(
+						array(
+						'Message.user_id' => $this->logged_in_user['id'],
+						'Message.user2id' => 0,
+						'Message.folder_id' => $folder_id,
+							),
+						array(
+						'Message.user2id' => $this->logged_in_user['id'],
+						//'Message.user2id' => 0,
+						'Message.folder_id' => $folder_id,
+						)
+						),
+				),
+				'order' => 'Message.id DESC'
+			);
+		} else {
+			$this->Paginator->settings = array(
+				'conditions' => array(
+					'Message.user2id' => $this->logged_in_user['id'],
+					'Message.folder_id' => $folder_id,
+				),
+				'order' => 'Message.id DESC'
+			);
+		}
+		$this->Message->recursive = 0;
+		//$this->Paginator->settings = array();
+		$messages = $this->Paginator->paginate();
+		//prx($messages);
+		$this->set('messages', $messages);
+	}
+
+	function client_inbox() {
+		$this->_client_index();
+		$this->set('_label', 'Inbox');
+	}
+
+	function client_sent() {
+		$this->_client_index(0, 1);
+		$this->set('_label', 'Sent');
+	}
+
+	function client_draft() {
+		$this->_client_index(0, 0, 1);
+		$this->set('_label', 'Drafts');
+	}
+
+	function client_folder($id = 0) {
+		switch($id) {
+			case 19:
+				$this->_client_index($id, 0, 1);
+				$label = 'Invoices';
+				break;
+			case 20:
+				$this->_client_index($id, 0, 1);
+				$label = 'Quotation';
+				break;
+			case 21:
+				$this->_client_index($id, 0, 1);
+				$label = 'HSE Update';
+				break;
+			case 22:
+				$this->_client_index($id, 0, 1);
+				$label = 'Project Picture and Progress';
+				break;
+			case 23:
+				$this->_client_index($id, 0, 1);
+				$label = 'Others';
+				break;
+			default:
+				$label = 'Received';
+		}
+		$this->set('_label', $label);
+	}
+
+	/**
+	 * admin_view method
 	 *
 	 * @throws NotFoundException
 	 * @param string $id
 	 * @return void
 	 */
-	public function view($id = null) {
+	public function admin_view($id = null) {
+		$this->_message_view($id);
+	}
+
+	function staff_view($id) {
+		$this->_message_view($id);
+	}
+
+
+	function client_view($id) {
+		$this->_message_view($id);
+	}
+	
+	function _message_view($id) {
 		if (!$this->Message->exists($id)) {
 			throw new NotFoundException(__('Invalid message'));
 		}
@@ -160,7 +332,7 @@ class MessagesController extends AppController {
 	public function admin_add() {
 		if ($this->request->is('post')) {
 			$this->_save_message();
-			$this->Session->setFlash(''.$this->_save_documents().' documents has been sent.', 'success');
+			$this->Session->setFlash('' . $this->_save_documents() . ' documents has been sent.', 'success');
 			return $this->redirect('/admin/folders/view/');
 		}
 		$_staff_users = $this->Message->User->find('list', array('conditions' => array('group_id' => 2, 'status' => 1)));
@@ -184,7 +356,7 @@ class MessagesController extends AppController {
 	public function staff_add() {
 		if ($this->request->is('post')) {
 			$this->_save_message();
-			$this->Session->setFlash(''.$this->_save_documents().' documents has been sent.', 'success');
+			$this->Session->setFlash('' . $this->_save_documents() . ' documents has been sent.', 'success');
 			return $this->redirect('/staff/messages/inbox/');
 		}
 		$_staff_users = $this->Message->User->find('list', array('conditions' => array('group_id' => 2, 'status' => 1)));
@@ -198,6 +370,41 @@ class MessagesController extends AppController {
 
 		$this->set('_staff_folders', $_staff_folders);
 		$this->set('_client_folders', $_client_folders);
+		
+		$this->_load_custom_folders();
+		
+	}
+
+	function _load_custom_folders() {
+		$this->loadModel('Folder');
+		$custom_folders = $this->Folder->find('list', array('conditions' => array('user_id' => $this->logged_in_user['id'])));
+		$this->set('custom_folders', $custom_folders);
+	}
+
+	/**
+	 * staff_add method
+	 *
+	 * @return void
+	 */
+	public function client_add() {
+		if ($this->request->is('post')) {
+			$this->_save_message();
+			$this->Session->setFlash('' . $this->_save_documents() . ' documents has been sent.', 'success');
+			return $this->redirect('/client/messages/inbox/');
+		}
+		$_staff_users = $this->Message->User->find('list', array('conditions' => array('group_id' => 2, 'status' => 1)));
+		$_client_users = $this->Message->User->find('list', array('conditions' => array('group_id' => 3, 'status' => 1)));
+
+		$this->set('_staff_users', $_staff_users);
+		$this->set('_client_users', $_client_users);
+
+		$_staff_folders = $this->Message->Folder->find('list', array('conditions' => array('type' => 2, 'status' => 1)));
+		$_client_folders = $this->Message->Folder->find('list', array('conditions' => array('type' => 3, 'status' => 1)));
+
+		$this->set('_staff_folders', $_staff_folders);
+		$this->set('_client_folders', $_client_folders);
+		
+		$this->_load_custom_folders();
 	}
 
 	function _save_documents() {
@@ -236,7 +443,7 @@ class MessagesController extends AppController {
 	function _save_message() {
 		$message = array('Message' => array('message' => $this->request->data['Message']['description']));
 		$message['Message']['user_id'] = $this->logged_in_user['id'];
-		if($this->logged_in_user['group_id'] == 1) {
+		if ($this->logged_in_user['group_id'] == 1) {
 			if ($this->request->data['Message']['_core_type'] == 1) {
 				$message['Message']['user2id'] = 0;
 				$message['Message']['folder_id'] = 0;
@@ -250,14 +457,24 @@ class MessagesController extends AppController {
 				$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
 			}
 		}
-		if($this->logged_in_user['group_id'] == 2) {
+		if ($this->logged_in_user['group_id'] == 2) {
 			if ($this->request->data['Message']['_core_type'] == 1) {
 				$message['Message']['user2id'] = 1;
-				$message['Message']['folder_id'] = 0;
+				$message['Message']['folder_id'] = $this->request->data['Message']['_staff_folders'];
 			}
 			if ($this->request->data['Message']['_core_type'] == 0) {
 				$message['Message']['user2id'] = 0;
-				$message['Message']['folder_id'] = 0;
+				$message['Message']['folder_id'] = $this->request->data['Message']['_staff_folders'];
+			}
+		}
+		if ($this->logged_in_user['group_id'] == 3) {
+			if ($this->request->data['Message']['_core_type'] == 1) {
+				$message['Message']['user2id'] = 1;
+				$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
+			}
+			if ($this->request->data['Message']['_core_type'] == 0) {
+				$message['Message']['user2id'] = 0;
+				$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
 			}
 		}
 		$this->Message->create();
@@ -313,6 +530,18 @@ class MessagesController extends AppController {
 			$this->Session->setFlash(__('The message could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
+	}
+
+	function load_folders() {
+		$this->Folder = new Folder();
+		$folders = $this->Folder->find(
+				'list', array(
+			'conditions' => array(
+				'Folder.type' => $this->logged_in_user['group_id']
+			)
+				)
+		);
+		$this->set('folders', $folders);
 	}
 
 }

@@ -233,6 +233,7 @@ ul.top-menu > li > .logout {
     height: 100%;
     position: relative;
     background: #424a5d;
+    margin-top: 5px;
 }
 
 #sidebar h5 {

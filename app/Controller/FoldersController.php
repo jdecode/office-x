@@ -30,8 +30,12 @@ class FoldersController extends AppController {
 				'admin_update_status',
 			),
 			'staff' => array(
+				'staff_view',
+				'staff_add'
 			),
 			'client' => array(
+				'client_view',
+				'client_add'
 			),
 		);
 		$this->_deny_url($this->_deny);
@@ -40,7 +44,7 @@ class FoldersController extends AppController {
 	public $components = array('Paginator');
 
 	/**
-	 * index method
+	 * admin_index method
 	 *
 	 * @return void
 	 */
@@ -54,7 +58,7 @@ class FoldersController extends AppController {
 	}
 
 	public function admin_index() {
-		$this->_admin_index();
+		//$this->_admin_index();
 	}
 
 	public function admin_all() {
@@ -70,7 +74,7 @@ class FoldersController extends AppController {
 	}
 
 	/**
-	 * view method
+	 * admin_view method
 	 *
 	 * @throws NotFoundException
 	 * @param string $id
@@ -78,6 +82,51 @@ class FoldersController extends AppController {
 	 */
 	public function admin_view($id = 0) {
 		$this->_admin_index($id);
+	}
+
+	/**
+	 * non_admin_index method
+	 *
+	 * @return void
+	 */
+	public function _non_admin_index($type = 0) {
+		$this->Folder->recursive = 0;
+		if ($type)
+		{
+			$this->Paginator->settings = array(
+				'conditions' => array(
+					'Folder.type' => $type,
+					'Folder.user_id' => $this->logged_in_user['id'],
+					)
+				);
+			$this->set('folders', $this->Paginator->paginate());
+		} else {
+			$this->redirect('/logout');
+		}
+		$this->set('_type', $type);
+	}
+
+	/**
+	 * staff_view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
+	public function staff_view() {
+		$this->_non_admin_index(4);
+		
+	}
+
+	/**
+	 * client_view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
+	public function client_view() {
+		$this->_non_admin_index(5);
 	}
 
 	/**
@@ -93,6 +142,45 @@ class FoldersController extends AppController {
 				return $this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The folder could not be saved. Please, try again.'));
+			}
+		}
+	}
+
+	/**
+	 * staff_add method
+	 *
+	 * @return void
+	 */
+	public function staff_add() {
+		if ($this->request->is('post')) {
+			$folder = array('Folder' => array('user_id' => $this->logged_in_user['id'], 'type' => 4));
+			$folder['Folder']['name'] = $this->request->data['Folder']['name'];
+			$this->Folder->create();
+			if ($this->Folder->save($folder)) {
+				$this->Session->setFlash(__('The folder has been saved.'), 'success');
+				return $this->redirect('/staff/folders/view');
+			} else {
+				$this->Session->setFlash(__('The folder could not be saved. Please, try again.'), 'error');
+			}
+		}
+	}
+
+
+	/**
+	 * client_add method
+	 *
+	 * @return void
+	 */
+	public function client_add() {
+		if ($this->request->is('post')) {
+			$folder = array('Folder' => array('user_id' => $this->logged_in_user['id'], 'type' => 5));
+			$folder['Folder']['name'] = $this->request->data['Folder']['name'];
+			$this->Folder->create();
+			if ($this->Folder->save($folder)) {
+				$this->Session->setFlash(__('The folder has been saved.'), 'success');
+				return $this->redirect('/client/folders/view');
+			} else {
+				$this->Session->setFlash(__('The folder could not be saved. Please, try again.'), 'error');
 			}
 		}
 	}

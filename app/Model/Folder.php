@@ -14,7 +14,7 @@ class Folder extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'Name' => array(
+		'name' => array(
 			'notEmpty' => array(
 				'rule' => array('notEmpty'),
 				//'message' => 'Your custom message here',
@@ -34,7 +34,7 @@ class Folder extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'Status' => array(
+		'status' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',

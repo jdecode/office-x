@@ -5,7 +5,6 @@ echo $this->Session->flash();
 <div class="col-md-12">
 	<div class="content-panel">
 		<table class="table table-striped table-advance table-hover">
-			<h4><i class="fa fa-angle-right"></i> <?php echo $_label; ?> </h4>
 			<?php echo $this->Session->flash(); ?>
 
 			<div class=" clear">&nbsp;</div>

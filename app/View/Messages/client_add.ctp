@@ -1,7 +1,6 @@
 <?php
 echo $this->Session->flash();
-$_all_folders = $_staff_folders + $custom_folders;
-//pr($_staff_folders);
+$_all_folders = $_client_folders + $custom_folders;
 ?>
 <div class="col-lg-10">
 	<?php echo $this->Form->create('Message', array("class" => "form-horizontal style-form", 'id' => "UploadAdminAddForm", "type" => "file")); ?>
@@ -24,10 +23,10 @@ $_all_folders = $_staff_folders + $custom_folders;
 			<div class="col-sm-9">
 				<?php
 				echo $this->Form->input(
-						'_staff_folders', array(
+						'_client_folders', array(
 					'label' => '',
 					'type' => 'select',
-					'options' => $_staff_folders
+					'options' => $_client_folders
 						)
 				);
 				echo $this->Form->input(
@@ -37,7 +36,7 @@ $_all_folders = $_staff_folders + $custom_folders;
 					'type' => 'select',
 					'id' => '_only_default_folders',
 					'style' => 'display: none;',
-					'options' => $_staff_folders
+					'options' => $_client_folders
 						)
 				);
 				?>
@@ -125,8 +124,8 @@ $_all_folders = $_staff_folders + $custom_folders;
 			$(this).removeClass('btn-danger');
 			$(this).addClass('btn-success');
 			$('#_draft').addClass('btn-danger');
-			
-			$('#MessageStaffFolders').html($('#_only_default_folders').html());
+
+			$('#MessageClientFolders').html($('#_only_default_folders').html());
 
 		});
 		$('#_draft').click(function() {
@@ -136,8 +135,8 @@ $_all_folders = $_staff_folders + $custom_folders;
 			$(this).removeClass('btn-danger');
 			$(this).addClass('btn-success');
 			$('#_admin').addClass('btn-danger');
-			
-			$('#MessageStaffFolders').html($('#_all_folders').html());
+
+			$('#MessageClientFolders').html($('#_all_folders').html());
 
 		});
 

@@ -46,32 +46,28 @@
 					<div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
 				</div>
 				<!--logo start-->
-				<a href="<?php echo $this->webroot.'' ?>" class="logo"><b>E-DOCUMENT MANAGEMENT SYSTEM</b></a>
+				<a href="<?php echo $this->webroot . '' ?>" class="logo"><b>E-DOCUMENT MANAGEMENT SYSTEM</b></a>
 				<!--logo end-->
 
 				<div class="top-menu">
 					<ul class="nav pull-right top-menu">
-						<li><?php echo "<span style='text-transform:uppercase; position:relative;top:20px;' class ='logout'>".$_client_data['username']."</span>" ?></li>         <!--$_admin_data['username']-->
+						<li><?php echo "<span style='text-transform:uppercase; position:relative;top:20px;' class ='logout'>" . $_client_data['username'] . "</span>" ?></li>         <!--$_admin_data['username']-->
 						<li>
-							<?php 
+							<?php
 							echo $this->Html->link(
-									'Change password',
-									'/client/users/changepassword',
-									array(
-										'class' => 'logout'
-										)
-									);
+									'Change password', '/client/users/changepassword', array(
+								'class' => 'logout'
+									)
+							);
 							?>
 						</li>
 						<li>
-							<?php 
+							<?php
 							echo $this->Html->link(
-									'Logout',
-									'/logout',
-									array(
-										"class" => "logout"
-										)
-									);
+									'Logout', '/logout', array(
+								"class" => "logout"
+									)
+							);
 							?>
 						</li>
 					</ul>
@@ -111,6 +107,12 @@
 
 			<!--main content end-->
 			<!--footer start-->
+			<?php echo $this->element('sql_dump'); ?> 
+			<br />
+			<br />
+			<br />
+			<br />
+			<br />
 			<footer class="site-footer">
 				<div class="text-center">
 					<?php echo date('Y') ?> - himsoftsolution.com
@@ -138,22 +140,5 @@
 			"/assets/js/common-scripts.js"
 		))
 		?>
-
-
-
-		<!--common script for all pages-->
-
-
-		<!--script for this page-->
-
-		<script>
-            //custom select box
-
-            $(function () {
-                $('select.styled').customSelect();
-            });
-
-		</script>
-		<?php echo $this->element('sql_dump');?> 
 	</body>
 </html>
