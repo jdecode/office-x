@@ -37,6 +37,7 @@ class UsersController extends AppController {
 				'admin_addclient',
 				'admin_update_status',
 				'admin_view',
+				'admin_loginas',
 			),
 			'staff' => array(
 				'staff_dashboard',
@@ -94,15 +95,14 @@ class UsersController extends AppController {
 	 */
 	public function admin_view($id = null) {
 		if ($this->request->is('post')) {
-			if(
-					isset($this->request->data['User']['reset_password']) 
-					&& trim($this->request->data['User']['reset_password']) != '') {
+			if (
+					isset($this->request->data['User']['reset_password']) && trim($this->request->data['User']['reset_password']) != '') {
 				$user = $this->User->read(null, $id);
-				if($user) {
+				if ($user) {
 					$user['User']['password'] = sha1($this->request->data['User']['reset_password']);
-					if($this->User->save($user)) {
+					if ($this->User->save($user)) {
 						$this->Session->setFlash('Password has been updated successfully!', 'success');
-						return $this->redirect('/admin/users/view/'.$id);
+						return $this->redirect('/admin/users/view/' . $id);
 					}
 				}
 			}
@@ -543,6 +543,9 @@ class UsersController extends AppController {
 		$this->_changepassword();
 	}
 
+	/**
+	 * Needs refactoring
+	 */
 	private function _changepassword() {
 		if ($this->request->is('post') || $this->request->is('put')) {
 			$this->User->id = $this->logged_in_user['id'];
@@ -588,6 +591,44 @@ class UsersController extends AppController {
 			}
 		}
 		$this->set('return', $return);
+	}
+
+	function admin_loginas($id = null) {
+		$error = true;
+		if (!is_null($id)) {
+			$error = false;
+		}
+		if (!$error) {
+			if (!$this->User->exists($id)) {
+				$error = true;
+			}
+		}
+		if ($error) {
+			$this->redirect('/logout');
+		}
+
+		$user = $this->User->read(null, $id);
+
+		$redirect = '/login';
+		switch ($user['User']['group_id']) {
+			case 1:
+				$this->Session->write('admin', $user);
+				$redirect = '/admin/dashboard';
+				break;
+			case 2:
+				$this->Session->write('staff', $user);
+				$redirect = '/staff/dashboard';
+				break;
+			case 3:
+				$this->Session->write('client', $user);
+				$redirect = '/client/dashboard';
+				break;
+			default:
+				$redirect = '/login';
+				break;
+		}
+		return $this->redirect($redirect);
+		exit();
 	}
 
 }

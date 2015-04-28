@@ -115,6 +115,8 @@ class AppController extends Controller {
 		$_user = $this->Session->read('admin.User');
 		if (isset($_user['id']) && is_numeric($_user['id']) && $_user['group_id'] == ADMIN_GROUP_ID) { // Admin group_id is 1
 			$this->layout = 'admin_dashboard';
+			$this->load_admin_counters();
+			$this->logged_in_user = $this->Session->read('admin.User');
 			return true;
 		} else {
 			$this->layout = 'login';
@@ -136,6 +138,8 @@ class AppController extends Controller {
 		) {
 			$this->layout = 'staff_dashboard';
 			//$this->_get_staff_folders();
+			$this->load_staff_counters();
+			$this->logged_in_user = $this->Session->read('staff.User');
 			return true;
 		} else {
 			$this->layout = 'login';
@@ -158,6 +162,8 @@ class AppController extends Controller {
 				( $_user['group_id'] == CLIENT_GROUP_ID )
 		) {
 			$this->layout = 'client_dashboard';
+			$this->load_client_counters();
+			$this->logged_in_user = $this->Session->read('client.User');
 			return true;
 		} else {
 			$this->layout = 'login';

@@ -62,30 +62,6 @@ echo $this->Session->flash();
 	<?php
 		echo $this->Form->end();
 	?>
-	<?php
-	/*
-	  <table class="table table-striped table-advance table-hover">
-	  <thead>
-
-	  <tr>
-	  <!--<th>&nbsp;</th>	-->
-	  <th><?php echo __('Name of file'); ?></th>
-	  <th><?php echo __('Date of Upload'); ?></th>
-	  <th><?php echo __('Action'); ?></th>
-	  </tr>
-	  </thead>
-	  <tbody>
-	  <?php foreach ($document as $documents): ?>
-	  <tr>
-	  <td><?php echo $documents['Document']['filename']; ?></td>
-	  <td><?php echo $documents['Document']['created']; ?></td>
-	  <td><?php echo $this->Html->link('<span class="btn btn-primary">Download</span>', '/app/webroot/files/uploads/' . $documents['Document']['filename'], array('escape' => false, 'target' => '_blank')); ?>&nbsp;</td>
-	  </tr>
-	  <?php endforeach; ?>
-	  </tbody>
-	  </table>
-	 */
-	?>
 	<div class="row">
 		<div class="col-sm-3">
 			<?php
@@ -95,15 +71,21 @@ echo $this->Session->flash();
 				"action" => ($user['User']['group_id'] == 2 ? 'staff' : 'clients'),
 				'admin' => true
 					), array(
-				"class" => "btn btn-theme"
+				"class" => "btn btn-info"
 					)
 			);
 			?>
 		</div>
 		<div class="col-sm-4">
-			<div class="btn btn-theme reset_password pull-left">Reset Password</div>
+			<div class="btn btn-info reset_password pull-left">Reset Password</div>
 			<div class="btn btn-success reset_password_submit pull-left hide">Save Password</div>
 			<div class="btn btn-danger reset_password_cancel pull-right hide">Cancel</div>
+		</div>
+		<div class="col-sm-3">
+			<a 
+				class="btn btn-info reset_password pull-left"
+				target="_blank"
+				href="<?php echo $this->webroot.'admin/users/loginas/'.$user['User']['id'] ?>">Login on front end</a>
 		</div>
 	</div>
 </div>
