@@ -332,7 +332,7 @@ class MessagesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->_save_message();
 			$this->Session->setFlash('' . $this->_save_documents() . ' documents has been sent.', 'success');
-			return $this->redirect('/admin/folders/view/');
+			return $this->redirect('/admin/messages/inbox/');
 		}
 		$_staff_users = $this->Message->User->find('list', array('conditions' => array('group_id' => 2, 'status' => 1)));
 		$_client_users = $this->Message->User->find('list', array('conditions' => array('group_id' => 3, 'status' => 1)));
