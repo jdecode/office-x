@@ -41,7 +41,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Received', "/staff/messages/folder/24", array(
+				"Received ($staff_received_count)", "/staff/messages/folder/24", array(
 			"class" => '',
 			"escape" => false
 				)
@@ -51,7 +51,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Sent', '/staff/messages/sent', array(
+				"Sent ($staff_sent_count)", '/staff/messages/sent', array(
 			"class" => '',
 			"escape" => false
 				)
@@ -61,7 +61,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Uploaded by Scan', '/staff/messages/folder/26', array(
+				"Uploaded by Scan ($staff_uploaded_count)", '/staff/messages/folder/26', array(
 			"class" => '',
 			"escape" => false
 				)
@@ -71,7 +71,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Shared', '/staff/messages/folder/27', array(
+				"Shared ($staff_shared_count)", '/staff/messages/folder/27', array(
 			"class" => '',
 			"escape" => false
 				)

@@ -1,5 +1,4 @@
 <?php
-//pr($folders);
 $statuses = array(0 => 'Inactive', 1 => 'active');
 
 echo $this->Session->flash();
@@ -43,55 +42,52 @@ echo $this->Session->flash();
 					<td>
 						<?php
 						echo $this->Html->link(
-								$folder['Folder']['name'],
-								"/staff/messages/custom_folder/{$folder['Folder']['id']}"
-								);
+								$folder['Folder']['name'] . " ({$folder['Folder']['count']})", "/staff/messages/custom_folder/{$folder['Folder']['id']}"
+						);
 						?>
 					</td>
 					<td class="">
 						<?php
-							echo $this->Html->link(
-									'View',
-									'/staff/messages/custom_folder/' . $folder['Folder']['id'], 
-									array(
-										'class' => 'btn btn-success btn-xs',
-										'rel' => $folder['Folder']['id']
-										)
-							);
-						/*
-						echo
-						$folder['Folder']['status'] == 1 ?
-								$this->Html->link(
-										'Active',
-										'/admin/folders/update_status/' . $folder['Folder']['id'], 
-										array(
-											'class' => 'btn btn-success btn-xs',
-											'rel' => $folder['Folder']['id']
-											)
-								) :
-								$this->Html->link(
-										'Inactive', 
-										'/admin/folders/update_status/' . $folder['Folder']['id'], 
-										array(
-											'class' => 'btn btn-danger btn-xs',
-											'rel' => $folder['Folder']['id']
-											)
+						echo $this->Html->link(
+								'View', '/staff/messages/custom_folder/' . $folder['Folder']['id'], array(
+							'class' => 'btn btn-success btn-xs',
+							'rel' => $folder['Folder']['id']
 								)
-						;
-						*/
+						);
+						/*
+						  echo
+						  $folder['Folder']['status'] == 1 ?
+						  $this->Html->link(
+						  'Active',
+						  '/admin/folders/update_status/' . $folder['Folder']['id'],
+						  array(
+						  'class' => 'btn btn-success btn-xs',
+						  'rel' => $folder['Folder']['id']
+						  )
+						  ) :
+						  $this->Html->link(
+						  'Inactive',
+						  '/admin/folders/update_status/' . $folder['Folder']['id'],
+						  array(
+						  'class' => 'btn btn-danger btn-xs',
+						  'rel' => $folder['Folder']['id']
+						  )
+						  )
+						  ;
+						 */
 						?>
 					</td>
 					<!--<td>
-						<?php
-						/*
-						echo $this->Html->link(
-								'<i class="fa fa-check"></i> View', '/admin/folders/documents/' . $folder['Folder']['id'], array(
-							'class' => 'btn btn-success btn-xs',
-							'escape' => false
-								)
-						);
-						*/
-						?>
+					<?php
+					/*
+					  echo $this->Html->link(
+					  '<i class="fa fa-check"></i> View', '/admin/folders/documents/' . $folder['Folder']['id'], array(
+					  'class' => 'btn btn-success btn-xs',
+					  'escape' => false
+					  )
+					  );
+					 */
+					?>
 					</td>-->
 				</tr>
 				</tr>
@@ -100,22 +96,21 @@ echo $this->Session->flash();
 	</table>
 
 
-</table>
 
-<p>
-	<?php
-	echo $this->Paginator->counter(array(
-		'format' => __('Page {:page} of {:pages}')
-	));
-	?>	</p>
+	<p>
+		<?php
+		echo $this->Paginator->counter(array(
+			'format' => __('Page {:page} of {:pages}')
+		));
+		?>	</p>
 
-<div class="paging">
-	<?php
-	echo $this->Paginator->prev('< ' . __('previous'), array(), null, array('class' => 'prev disabled'));
-	echo $this->Paginator->numbers(array('separator' => ''));
-	echo $this->Paginator->next(__('next') . ' >', array(), null, array('class' => 'next disabled'));
-	?>
-</div>
+	<div class="paging">
+		<?php
+		echo $this->Paginator->prev('< ' . __('previous'), array(), null, array('class' => 'prev disabled'));
+		echo $this->Paginator->numbers(array('separator' => ''));
+		echo $this->Paginator->next(__('next') . ' >', array(), null, array('class' => 'next disabled'));
+		?>
+	</div>
 
 </div>
 
@@ -127,15 +122,15 @@ echo $this->Session->flash();
 			_id = _this.attr('rel');
 			_this.addClass('disabled');
 			$.ajax({
-				url: "<?php echo $this->webroot.'admin/folders/update_status/' ?>"+_id,
+				url: "<?php echo $this->webroot . 'admin/folders/update_status/' ?>" + _id,
 				cache: false
 			}).done(function(html) {
-				if(html === '1') {
+				if (html === '1') {
 					_this.removeClass('btn-danger');
 					_this.addClass('btn-success');
 					_this.text('Active');
 				}
-				if(html === '2') {
+				if (html === '2') {
 					_this.removeClass('btn-success');
 					_this.addClass('btn-danger');
 					_this.text('Inactive');

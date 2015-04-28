@@ -69,7 +69,11 @@ echo $this->Session->flash();
 			</tbody>
 		</table>
 		<br />
-		<a style="margin-left: 10px;" onclick="window.history.back();"><button type="button" class="btn btn-theme">Back</button></a>
+		<a 
+			style="margin-left: 10px;" 
+			href="<?php echo $this->webroot.'client/messages/custom_folder/'.$message['Folder']['id'] ?>" >
+			<button type="button" class="btn btn-theme">Back</button>
+		</a>
 	</div><!-- /content-panel -->
 
 	<div class=" clear">&nbsp;</div>

@@ -132,10 +132,9 @@ class MessagesController extends AppController {
 							),
 						array(
 						'Message.user2id' => $this->logged_in_user['id'],
-						//'Message.user2id' => 0,
 						'Message.folder_id' => $folder_id,
 						)
-						),
+					),
 				),
 				'order' => 'Message.id DESC'
 			);
@@ -355,6 +354,7 @@ class MessagesController extends AppController {
 	 */
 	public function staff_add() {
 		if ($this->request->is('post')) {
+			//pr($_FILES); prx($this->request->data);
 			$this->_save_message();
 			$this->Session->setFlash('' . $this->_save_documents() . ' documents has been sent.', 'success');
 			return $this->redirect('/staff/messages/inbox/');
@@ -465,6 +465,9 @@ class MessagesController extends AppController {
 			if ($this->request->data['Message']['_core_type'] == 0) {
 				$message['Message']['user2id'] = 0;
 				$message['Message']['folder_id'] = $this->request->data['Message']['_staff_folders'];
+			} else {
+				$message['Message']['user2id'] = 1;
+				$message['Message']['folder_id'] = $this->request->data['Message']['_staff_folders'];
 			}
 		}
 		if ($this->logged_in_user['group_id'] == 3) {
@@ -474,6 +477,9 @@ class MessagesController extends AppController {
 			}
 			if ($this->request->data['Message']['_core_type'] == 0) {
 				$message['Message']['user2id'] = 0;
+				$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
+			} else {
+				$message['Message']['user2id'] = 1;
 				$message['Message']['folder_id'] = $this->request->data['Message']['_client_folders'];
 			}
 		}

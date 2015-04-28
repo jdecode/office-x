@@ -5,6 +5,7 @@ echo $this->Session->flash();
 <div class="col-md-12">
 	<div class="content-panel">
 		<table class="table table-striped table-advance table-hover">
+			<h4><i class="fa fa-angle-right"></i> <?php echo $_label; ?> </h4>
 			<?php echo $this->Session->flash(); ?>
 
 			<div class=" clear">&nbsp;</div>
@@ -13,7 +14,7 @@ echo $this->Session->flash();
 				<tr>
 					<th><?php echo 'Sr.No'; ?></th>
 					<th><?php echo 'Sender'; ?></th>
-					<th><?php echo 'Receiver'; ?></th>
+					<th><?php echo 'Folder'; ?></th>
 					<th><?php echo 'Message'; ?></th>
 					<th><?php echo 'Date/Time'; ?></th>
 					<th class="actions"><?php echo __('Actions'); ?></th>
@@ -37,7 +38,7 @@ echo $this->Session->flash();
 								<?php echo $message['User']['username']; ?>
 							</td>
 							<td>
-								<?php echo $message['User2']['username']; ?>
+								<?php echo $message['Folder']['name']; ?>
 							</td>
 							<!-- <td><?php //echo $this->Html->link('<span class="btn btn-primary">Download</span>', '/app/webroot/files/documents/' . $message['Document']['filename'], array('escape' => false, 'target' => '_blank', 'download' => true)); ?>&nbsp;</td> -->
 							<td><?php echo $message['Message']['message']; ?>&nbsp;</td>
@@ -61,12 +62,6 @@ echo $this->Session->flash();
 
 			</tbody>
 		</table>
-		<br />
-		<a 
-			style="margin-left: 10px;" 
-			href="<?php echo $this->webroot.'client/folders/view' ?>">
-			<button type="button" class="btn btn-theme">Back</button>
-		</a>
 	</div><!-- /content-panel -->
 
 	<div class=" clear">&nbsp;</div>

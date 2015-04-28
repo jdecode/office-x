@@ -1,3 +1,3 @@
 <?php
 
-echo $this->element('admin_message_listing');
+echo $this->element('admin_message_listing_inbox');

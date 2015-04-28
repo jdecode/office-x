@@ -110,7 +110,7 @@ $_all_folders = $_staff_folders + $custom_folders;
 		</div>
 	</div>
 
-	<?php echo $this->Form->input('_core_type', array('type' => 'hidden', 'id' => '_core_type', 'value' => '2')); ?>
+	<?php echo $this->Form->input('_core_type', array('type' => 'hidden', 'id' => '_core_type', 'value' => '1')); ?>
 
 	<?php echo $this->Form->end(); ?>
 </div>

@@ -35,7 +35,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Invoices', "/client/messages/folder/19", array(
+				"Invoices ($client_invoices_count)", "/client/messages/folder/19", array(
 			"class" => '',
 			"escape" => false
 				)
@@ -45,7 +45,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Sent', '/client/messages/sent', array(
+				"Sent ($client_sent_count)", '/client/messages/sent', array(
 			"class" => '',
 			"escape" => false
 				)
@@ -55,7 +55,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Quotation', '/client/messages/folder/20', array(
+				"Quotation ($client_quotation_count)", '/client/messages/folder/20', array(
 			"class" => '',
 			"escape" => false
 				)
@@ -65,7 +65,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'HSE Update', '/client/messages/folder/21', array(
+				"HSE Update ($client_hseupdate_count)", '/client/messages/folder/21', array(
 			"class" => '',
 			"escape" => false
 				)
@@ -75,7 +75,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Project Picture and Progress', '/client/messages/folder/22', array(
+				"Project Picture and Progress ($client_ppap_count)", '/client/messages/folder/22', array(
 			"class" => '',
 			"escape" => false
 				)
@@ -85,7 +85,7 @@ $_Draft = 0;
 	<li>
 		<?php
 		echo $this->Html->link(
-				'Others', '/client/messages/folder/23', array(
+				"Others ($client_others_count)", '/client/messages/folder/23', array(
 			"class" => '',
 			"escape" => false
 				)

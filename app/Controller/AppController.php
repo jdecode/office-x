@@ -22,6 +22,7 @@
 App::uses('Controller', 'Controller');
 App::uses('User', 'Model');
 App::uses('Folder', 'Model');
+App::uses('Message', 'Model');
 
 /**
  * Application Controller
@@ -63,19 +64,20 @@ class AppController extends Controller {
 
 		if ($_admin_data) {
 			$this->set('logged_in_user', $_admin_data);
+			$this->load_admin_counters();
 		} else if ($_staff_data) {
 			$this->set('logged_in_user', $_staff_data);
+			$this->load_staff_counters();
 		} else if ($_client_data) {
 			$this->set('logged_in_user', $_client_data);
+			$this->load_client_counters();
 		}
 
 
 		/**
 		 * Load Folders
 		 */
-		
 		//$this->load_folders();
-		  
 	}
 
 	/**
@@ -176,7 +178,7 @@ class AppController extends Controller {
 		  dvd($this->_staff_auth_check());
 		  decho('Client:');
 		  dvd($this->_client_auth_check());
-		*/
+		 */
 		//die;
 		// If method requires login then redirect to login page[if logged out] with referer URL, and to dashboard otherwise
 		if (!empty($this->_deny['admin'])) {
@@ -224,21 +226,150 @@ class AppController extends Controller {
 	function load_folders() {
 		$this->loadModel('Folder');
 		$folders = $this->Folder->find(
-				'list', 
-				array(
-					'conditions' => array(
-						'Folder.type' => $this->logged_in_user['group_id']
-					),
+				'list', array(
+			'conditions' => array(
+				'Folder.type' => $this->logged_in_user['group_id']
+			),
 				)
-			);
+		);
 		$this->set('folders', $folders);
 	}
 
 	function _generate_random_number() {
-		return sha1(rand().time().microtime().rand().sha1(time()));
+		return sha1(rand() . time() . microtime() . rand() . sha1(time()));
 	}
 
 	function _get_staff_folders() {
 		$this->load_folders();
+	}
+
+	function _find_message_count($_conditions = array()) {
+		$this->Message = new Message();
+		$conditions = array(
+			'conditions' => $_conditions
+		);
+		return $this->Message->find('count', $conditions);
+	}
+
+	function load_admin_counters() {
+		$this->set('admin_inbox_count', $this->_get_admin_inbox_count());
+		$this->set('admin_sent_count', $this->_get_admin_sent_count());
+		$this->set('admin_draft_count', $this->_get_admin_draft_count());
+	}
+
+	function _get_admin_inbox_count() {
+		return $this->_find_message_count(
+						array(
+							'Message.user2id' => $this->logged_in_user['id']
+						)
+		);
+	}
+
+	function _get_admin_sent_count() {
+		return $this->_find_message_count(
+						array(
+							'Message.user_id' => $this->logged_in_user['id'],
+							'Message.folder_id !=' => 0,
+						)
+		);
+	}
+
+	function _get_admin_draft_count() {
+		return $this->_find_message_count(
+						array(
+							'Message.user_id' => $this->logged_in_user['id'],
+							'Message.folder_id' => 0,
+						)
+		);
+	}
+
+	function load_staff_counters() {
+
+		$this->set('staff_received_count', $this->_get_staff_received_count());
+		$this->set('staff_sent_count', $this->_get_staff_sent_count());
+		$this->set('staff_uploaded_count', $this->_get_staff_uploaded_count());
+		$this->set('staff_shared_count', $this->_get_staff_shared_count());
+	}
+
+	function _get_staff_received_count() {
+		return $this->_get_staff_folder_count(24);
+	}
+
+	function _get_staff_uploaded_count() {
+		return $this->_get_staff_folder_count(26);
+	}
+
+	function _get_staff_shared_count() {
+		return $this->_get_staff_folder_count(27);
+	}
+
+	function _get_staff_folder_count($folder_id) {
+		return $this->_get_folder_count($folder_id);
+	}
+	
+	function _get_folder_count($folder_id) {
+		return $this->_find_message_count(
+						array(
+							'OR' => array(
+								array(
+									'Message.user_id' => $this->logged_in_user['id'],
+									'Message.user2id' => 0,
+									'Message.folder_id' => $folder_id,
+								),
+								array(
+									'Message.user2id' => $this->logged_in_user['id'],
+									'Message.folder_id' => $folder_id,
+								)
+							)
+						)
+		);
+	}
+
+	function _get_staff_sent_count() {
+		return $this->_find_message_count(
+						array(
+							'Message.user_id' => $this->logged_in_user['id'],
+							'Message.user2id !=' => 0,
+						)
+		);
+	}
+
+	function load_client_counters() {
+		  $this->set('client_invoices_count', $this->_get_client_invoices_count());
+		  $this->set('client_sent_count', $this->_get_client_sent_count());
+		  $this->set('client_quotation_count', $this->_get_client_quotation_count());
+		  $this->set('client_hseupdate_count', $this->_get_client_hseupdate_count());
+		  $this->set('client_ppap_count', $this->_get_client_ppap_count());
+		  $this->set('client_others_count', $this->_get_client_others_count());
+	}
+	
+	function _get_client_invoices_count() {
+		return $this->_get_folder_count(19);
+	}
+	
+	function _get_client_quotation_count() {
+		return $this->_get_folder_count(20);
+	}
+	
+	function _get_client_hseupdate_count() {
+		return $this->_get_folder_count(21);
+	}
+	
+	function _get_client_ppap_count() {
+		return $this->_get_folder_count(22);
+	}
+	
+	function _get_client_others_count() {
+		return $this->_get_folder_count(23);
+	}
+
+
+	function _get_client_sent_count() {
+		return $this->_find_message_count(
+						array(
+							'Message.user_id' => $this->logged_in_user['id'],
+							'Message.user2id !=' => 0,
+						)
+		);
 	}
 }

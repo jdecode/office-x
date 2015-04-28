@@ -42,6 +42,7 @@ class FoldersController extends AppController {
 	}
 
 	public $components = array('Paginator');
+	public $custom_folders = array();
 
 	/**
 	 * admin_index method
@@ -91,15 +92,15 @@ class FoldersController extends AppController {
 	 */
 	public function _non_admin_index($type = 0) {
 		$this->Folder->recursive = 0;
-		if ($type)
-		{
+		if ($type) {
 			$this->Paginator->settings = array(
 				'conditions' => array(
 					'Folder.type' => $type,
 					'Folder.user_id' => $this->logged_in_user['id'],
-					)
-				);
-			$this->set('folders', $this->Paginator->paginate());
+				)
+			);
+			$this->custom_folders = $this->Paginator->paginate();
+			$this->set('folders', $this->custom_folders);
 		} else {
 			$this->redirect('/logout');
 		}
@@ -115,7 +116,16 @@ class FoldersController extends AppController {
 	 */
 	public function staff_view() {
 		$this->_non_admin_index(4);
-		
+		$this->_custom_folders_count();
+	}
+
+	function _custom_folders_count() {
+		if (isset($this->custom_folders) && is_array($this->custom_folders) && count($this->custom_folders)) {
+			foreach($this->custom_folders as $k => $folder) {
+				$this->custom_folders[$k]['Folder']['count'] = $this->_get_staff_folder_count($folder['Folder']['id']);
+			}
+			$this->set('folders', $this->custom_folders);
+		}
 	}
 
 	/**
@@ -127,6 +137,7 @@ class FoldersController extends AppController {
 	 */
 	public function client_view() {
 		$this->_non_admin_index(5);
+		$this->_custom_folders_count();
 	}
 
 	/**
@@ -164,7 +175,6 @@ class FoldersController extends AppController {
 			}
 		}
 	}
-
 
 	/**
 	 * client_add method
@@ -235,17 +245,18 @@ class FoldersController extends AppController {
 		$this->Folder->id = $id;
 		if ($this->Folder->exists()) {
 			$folder = $this->Folder->read(null, $id);
-			if($folder['Folder']['status'] == 0) {
+			if ($folder['Folder']['status'] == 0) {
 				$return = 1;
 				$folder['Folder']['status'] = 1;
 			} else {
 				$return = 2;
 				$folder['Folder']['status'] = 0;
 			}
-			if(!$this->Folder->save($folder)) {
+			if (!$this->Folder->save($folder)) {
 				$return = 0;
 			}
 		}
 		$this->set('return', $return);
 	}
+
 }

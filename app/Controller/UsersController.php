@@ -495,7 +495,7 @@ class UsersController extends AppController {
 			}
 		}
 		//$this->Session->setFlash('You are now logged out.', 'flash_close', array('class' => 'alert alert-success'));
-		//$this->redirect('/login');
+		$this->redirect('/login');
 	}
 
 	/**

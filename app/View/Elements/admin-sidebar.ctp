@@ -153,7 +153,7 @@ if (
 			<li>
 				<?php
 				echo $this->Html->link(
-						'Inbox', '/admin/messages/inbox', array(
+						"Inbox ($admin_inbox_count)", '/admin/messages/inbox', array(
 					"class" => '',
 					"escape" => false
 						)
@@ -163,7 +163,7 @@ if (
 			<li>
 				<?php
 				echo $this->Html->link(
-						'Sent', '/admin/messages/sent', array(
+						"Sent ($admin_sent_count)", '/admin/messages/sent', array(
 					"class" => '',
 					"escape" => false
 						)
@@ -173,7 +173,7 @@ if (
 			<li>
 				<?php
 				echo $this->Html->link(
-						'Drafts', '/admin/messages/draft', array(
+						"Drafts ($admin_draft_count)", '/admin/messages/draft', array(
 					"class" => '',
 					"escape" => false
 						)
