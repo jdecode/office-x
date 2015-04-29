@@ -42,6 +42,12 @@ Router::connect('/client', array('controller' => 'users', 'action' => 'dashboard
 Router::connect('/client/logout', array('controller' => 'users', 'action' => 'logout', 'client' => true));
 Router::connect('/client/dashboard', array('controller' => 'users', 'action' => 'dashboard', 'client' => true));
 
+/*
+Router::mapResources(array('documents', 'messages', 'users'));
+
+Router::parseExtensions();
+*/
+
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
