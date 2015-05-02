@@ -36,9 +36,18 @@ echo $this->Session->flash();
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ($folders as $folder) { ?>
+			<?php
+			$i = 1;
+			if (isset($this->params->paging["Message"]["page"])) {
+				$i = (10 * $this->params->paging["Message"]["page"]) - 9;
+			} else {
+				$i = 1;
+			}
+
+			foreach ($folders as $folder) {
+				?>
 				<tr>
-					<td><?php echo $folder['Folder']['id']; ?></td>
+					<td><?php echo $i; ?></td>
 					<td>
 						<?php
 						echo $this->Html->link(
@@ -91,7 +100,10 @@ echo $this->Session->flash();
 					</td>-->
 				</tr>
 				</tr>
-			<?php } ?>
+				<?php
+				$i++;
+			}
+			?>
 		</tbody>
 	</table>
 

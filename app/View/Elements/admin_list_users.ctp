@@ -22,9 +22,16 @@ echo $this->Session->flash();
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ($users as $user) { ?>
+			<?php 
+			$i = 1;
+			if (isset($this->params->paging["User"]["page"])) {
+				$i = (10 * $this->params->paging["User"]["page"]) - 9;
+			} else {
+				$i = 1;
+			}
+			foreach ($users as $user) { ?>
 				<tr>
-					<td><?php echo $user['User']['id']; ?></td>
+					<td><?php echo $i; ?></td>
 					<td><?php echo h($user['User']['name']); ?></td>
 					<?php
 					if ($user_type == 2) {
@@ -77,7 +84,9 @@ echo $this->Session->flash();
 					</td>
 				</tr>
 				</tr>
-					<?php } ?>
+					<?php 
+					$i++;
+					} ?>
 		</tbody>
 	</table>
 

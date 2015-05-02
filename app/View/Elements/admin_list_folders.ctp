@@ -39,9 +39,18 @@ echo $this->Session->flash();
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ($folders as $folder) { ?>
+			<?php
+			$i = 1;
+			if (isset($this->params->paging["Message"]["page"])) {
+				$i = (10 * $this->params->paging["Message"]["page"]) - 9;
+			} else {
+				$i = 1;
+			}
+
+			foreach ($folders as $folder) {
+				?>
 				<tr>
-					<td><?php echo $folder['Folder']['id']; ?></td>
+					<td><?php echo $i; ?></td>
 					<td><a href="#"><?php echo h($folder['Folder']['name']); ?></a></td>
 					<td><?php echo $_folder_types[$folder['Folder']['type']]; ?></td>
 					<td class="update_status">
@@ -49,37 +58,36 @@ echo $this->Session->flash();
 						echo
 						$folder['Folder']['status'] == 1 ?
 								$this->Html->link(
-										'Active',
-										'/admin/folders/update_status/' . $folder['Folder']['id'], 
-										array(
-											'class' => 'btn btn-success btn-xs',
-											'rel' => $folder['Folder']['id']
-											)
+										'Active', '/admin/folders/update_status/' . $folder['Folder']['id'], array(
+									'class' => 'btn btn-success btn-xs',
+									'rel' => $folder['Folder']['id']
+										)
 								) :
 								$this->Html->link(
-										'Inactive', 
-										'/admin/folders/update_status/' . $folder['Folder']['id'], 
-										array(
-											'class' => 'btn btn-danger btn-xs',
-											'rel' => $folder['Folder']['id']
-											)
+										'Inactive', '/admin/folders/update_status/' . $folder['Folder']['id'], array(
+									'class' => 'btn btn-danger btn-xs',
+									'rel' => $folder['Folder']['id']
+										)
 								)
 						;
 						?>
 					</td>
 					<!--<td>
-						<?php
-						echo $this->Html->link(
-								'<i class="fa fa-check"></i> View', '/admin/folders/documents/' . $folder['Folder']['id'], array(
-							'class' => 'btn btn-success btn-xs',
-							'escape' => false
-								)
-						);
-						?>
+					<?php
+					echo $this->Html->link(
+							'<i class="fa fa-check"></i> View', '/admin/folders/documents/' . $folder['Folder']['id'], array(
+						'class' => 'btn btn-success btn-xs',
+						'escape' => false
+							)
+					);
+					?>
 					</td>-->
 				</tr>
 				</tr>
-			<?php } ?>
+				<?php
+				$i++;
+			}
+			?>
 		</tbody>
 	</table>
 
@@ -111,15 +119,15 @@ echo $this->Session->flash();
 			_id = _this.attr('rel');
 			_this.addClass('disabled');
 			$.ajax({
-				url: "<?php echo $this->webroot.'admin/folders/update_status/' ?>"+_id,
+				url: "<?php echo $this->webroot . 'admin/folders/update_status/' ?>" + _id,
 				cache: false
 			}).done(function(html) {
-				if(html === '1') {
+				if (html === '1') {
 					_this.removeClass('btn-danger');
 					_this.addClass('btn-success');
 					_this.text('Active');
 				}
-				if(html === '2') {
+				if (html === '2') {
 					_this.removeClass('btn-success');
 					_this.addClass('btn-danger');
 					_this.text('Inactive');
