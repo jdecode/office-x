@@ -330,6 +330,7 @@ class MessagesController extends AppController {
 	 */
 	public function admin_add() {
 		if ($this->request->is('post')) {
+			//pr($this->request->data); prx($_FILES);
 			$this->_save_message();
 			$this->Session->setFlash('' . $this->_save_documents() . ' documents has been sent.', 'success');
 			return $this->redirect('/admin/messages/inbox/');
@@ -423,7 +424,7 @@ class MessagesController extends AppController {
 				if (move_uploaded_file($src, $dest)) {
 					$document = array(
 						'Document' => array(
-							'name' => $_FILES['file_name']['name'][$k],
+							'name' => $this->request->data['_name'][$k],
 							'title' => $_FILES['file_name']['name'][$k],
 							'filename' => $file_name,
 							'status' => 1,

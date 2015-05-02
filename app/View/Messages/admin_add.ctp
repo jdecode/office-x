@@ -89,6 +89,20 @@ echo $this->Session->flash();
 								<span>
 									<?php
 									echo $this->Form->input(
+											'_name', array(
+										'label' => false,
+										'type' => 'text',
+										'placeholder' => 'Enter File Name',
+										'name' => '_name[]',
+											)
+									);
+									?>
+								</span>
+							</div>
+							<div class="col-sm-3">
+								<span>
+									<?php
+									echo $this->Form->input(
 											'filename', array(
 										'label' => false,
 										'type' => 'file',
