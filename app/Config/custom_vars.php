@@ -1,5 +1,5 @@
 <?php
 
 /**
- * Custom variables
+ * App specific custom variables go here
  */

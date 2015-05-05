@@ -1,8 +1,9 @@
 <?php
 
 /**
- * Custom methods
+ * App specific custom methods go here
  */
+
 function encode_data($data) {
 	return base64_encode(convert_uuencode($data));
 }
@@ -48,5 +49,14 @@ function dvd($x) {
 function decho($x) {
 	if(isDebugModeOn()) {
 		echo $x;
+	}
+}
+
+
+function ifset($var) {
+	if(isset($var)) {
+		return $var;
+	} else {
+		return '';
 	}
 }

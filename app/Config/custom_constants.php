@@ -1,4 +1,7 @@
 <?php
+/**
+ * App specific custom constants go here
+ */
 
 define('LOGIN', 'login');
 

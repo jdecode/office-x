@@ -205,12 +205,12 @@ echo $this->Session->flash();
 			//alert(_last.html());
 			_data = '<div class="row _document">' + _last.html() + '</div>';
 			$('.document_set').append(_data);
-			//$('.remove_me').removeClass('hide');
-			//$('.remove_me').first().addClass('hide');
+			$('.remove_me').removeClass('hide');
+			$('.remove_me').first().addClass('hide');
 		});
 
-		$('.remove_me').click(function() {
-			//$(this).parent().parent().parent().remove();
+		$(document).on("click", ".remove_me", function(){
+			$(this).parent().parent().parent().remove();
 		});
 	});
 </script>
