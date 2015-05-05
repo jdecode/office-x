@@ -67,6 +67,20 @@ $_all_folders = $_client_folders + $custom_folders;
 								<span>
 									<?php
 									echo $this->Form->input(
+											'_name', array(
+										'label' => false,
+										'type' => 'text',
+										'placeholder' => 'Enter File Name',
+										'name' => '_name[]',
+											)
+									);
+									?>
+								</span>
+							</div>
+							<div class="col-sm-3">
+								<span>
+									<?php
+									echo $this->Form->input(
 											'filename', array(
 										'label' => false,
 										'type' => 'file',
@@ -146,12 +160,12 @@ $_all_folders = $_client_folders + $custom_folders;
 			//alert(_last.html());
 			_data = '<div class="row _document">' + _last.html() + '</div>';
 			$('.document_set').append(_data);
-			//$('.remove_me').removeClass('hide');
-			//$('.remove_me').first().addClass('hide');
+			$('.remove_me').removeClass('hide');
+			$('.remove_me').first().addClass('hide');
 		});
 
-		$('.remove_me').click(function() {
-			//$(this).parent().parent().parent().remove();
+		$(document).on("click", ".remove_me", function(){
+			$(this).parent().parent().parent().remove();
 		});
 	});
 </script>

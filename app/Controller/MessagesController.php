@@ -424,7 +424,7 @@ class MessagesController extends AppController {
 				if (move_uploaded_file($src, $dest)) {
 					$document = array(
 						'Document' => array(
-							'name' => $this->request->data['_name'][$k],
+							'name' => @$this->request->data['_name'][$k],
 							'title' => $_FILES['file_name']['name'][$k],
 							'filename' => $file_name,
 							'status' => 1,
