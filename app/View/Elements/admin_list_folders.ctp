@@ -41,8 +41,8 @@ echo $this->Session->flash();
 		<tbody>
 			<?php
 			$i = 1;
-			if (isset($this->params->paging["Message"]["page"])) {
-				$i = (10 * $this->params->paging["Message"]["page"]) - 9;
+			if (isset($this->params->paging["Folder"]["page"])) {
+				$i = (10 * $this->params->paging["Folder"]["page"]) - 9;
 			} else {
 				$i = 1;
 			}
